@@ -1,0 +1,44 @@
+{% load staticfiles  %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>WSSK</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-theme.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+</head>
+<body class="container-fluid" id="body">
+	<header class="header2">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="{% url 'tool_list'  %}">WSSK</a>
+				</div>
+				<ul class="nav navbar-nav">
+					<li><a href="active.html">Active analysis</a></li>
+					<li><a href="passive.html">Passive analysis</a></li>
+					<li><a href="crypto.html">Crypto tools</a></li>
+					<li><a href="network.html">Network tools</a></li>
+					<li><a href="scanner.html">Vulnerability scanner</a></li>
+				</ul>
+			</div>
+		</nav>
+		<br>
+		<span class="titulo">UNAM CERT</span> <!--Etiqueta que trabaja en forma de línea.-->
+		<h1>Web Security Swiss Knife</h1>
+	</header>
+	<div class="content container">
+		<div class="row">
+			<div class="col-md-11 col-lg-11">
+				{% block content %}
+				{% endblock %}
+			</div>
+		</div>
+	 </div>
+	<footer class="footer">
+		<p>All rights reserved</p>
+		<a href="">Go up</a>
+	</footer>
+</body>
+</html>

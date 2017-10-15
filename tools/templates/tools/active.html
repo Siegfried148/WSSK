@@ -1,0 +1,43 @@
+{% extends 'tools/base.html' %}
+{% block content %}
+	<br><br>
+		<div class="row">
+			<div class="col-md-8 col-lg-8" id="explain">
+				<form name = "form" action = "{% url "active" %}" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-7 col-md-offset-1 col-lg-7 col-lg-offset-1">
+							<input type = "text"  class="form-control" placeholder = "IP address or domain name" name = "ip_address" />
+						</div>
+						<div class="col-md-4 col-lg-4">
+							<input type = "text"  class="form-control" placeholder = "PORT" name = "port" />
+						</div>
+					</div>
+				        <br>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" >
+								<strong>Submit</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-4 col-lg-4 explain">
+				This tool will analyze a web server looking for special files that can be helpful fot attackers to get information about the server.
+				Specifically, this tool will look for:
+				<br><br>
+				<ul class="list-group">
+					<li class="list-group-item">Sensitive files such as robots.txt, backups, etc.</li>
+			    		<li class="list-group-item">Administration pages such as /admin or /user.</li> 
+		    			<li class="list-group-item">Directory index.</li> 
+		    			<li class="list-group-item">Installation directories such as setup, install, etc.</li> 
+		    			<li class="list-group-item">Directory and file mapping.</li> 
+		    			<li class="list-group-item">CMS version.</li> 
+				</ul>	    
+			</div>
+		</div>
+
+
+	
+{% endblock %}
+

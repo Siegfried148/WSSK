@@ -1,0 +1,49 @@
+{% load staticfiles  %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>WSSK</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-theme.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+</head>
+<body class="container-fluid body" id="body">
+	<header class="header">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="{% url 'tool_list'  %}">WSSK</a>
+				</div>
+				<ul class="nav navbar-nav">
+					<li><a href="active.html">Active analysis</a></li>
+					<li><a href="passive.html">Passive analysis</a></li>
+					<li><a href="crypto.html">Crypto tools</a></li>
+					<li><a href="network.html">Network tools</a></li>
+					<li><a href="scanner.html">Vulnerability scanner</a></li>
+				</ul>
+			</div>
+		</nav>
+		<br>
+		<span class="titulo">UNAM CERT</span> <!--Etiqueta que trabaja en forma de línea.-->
+		<h1>Web Security Swiss Knife</h1>
+	</header>
+	{% for tool in tools %}
+		<section class="segunda-seccion">
+			<a href = {{ tool.keyword }}.html >
+				<div class="izq img-responsive">
+					<img src="/static/img/{{ tool.keyword }}.png">
+				</div>
+				<div class="der">
+					<h3>{{ tool.title }}</h3>
+					<p>{{ tool.text }} </p>
+				</div>
+			</a>
+		</section>
+	{% endfor %}
+	<footer class="footer">
+		<p>All rights reserved</p>
+		<a href="">Ir arriba</a>
+	</footer>
+</body>
+</html>

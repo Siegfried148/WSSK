@@ -1,0 +1,239 @@
+body{
+	color: #660000;
+	font-size: 1.3em;
+}
+
+#body{
+	padding-top: 50px;
+}
+
+@media (max-width: 767px) /* @grid-float-breakpoint -1 */
+{
+	.navbar-fixed-top
+	{
+		position: relative;
+		top: auto;
+	}
+
+	#body
+	{
+		padding-top: 0px;
+	}
+}
+
+h1{
+	font-size: 5em;
+	color: rgba(255, 255, 255, 1);
+	text-transform: uppercase;
+	margin: 12px 0 0;
+	text-shadow: 0px 10px 10px rgba(150,0,0,0.8);
+}
+
+h2{
+	font-size: 3em;
+	color: rgba(255, 255, 255, 1);
+	text-transform: uppercase;
+	margin: 10px 10px 0;
+	text-shadow: 0px 5px 5px rgba(150,0,0,0.8);
+}
+
+h3{
+	font-size: 2.4em;
+	margin-bottom: 0.9em;
+	color: #48525C;
+}
+
+h4{
+	font-size: 1.6em;
+	margin-bottom: 0.6em;
+	color: #48525C;
+}
+
+img{
+	width: 100%;
+	height: 90%;
+	margin-bottom: 20px;
+	border-radius: 10px;
+	box-shadow: 3px 3px;
+}
+
+img:active{
+	box-shadow: 2px 2px;
+}
+
+.img{
+	width:300px;
+	height:250px;
+	position: relative;
+	left: 8%
+}
+
+dl{
+	margin: 30px 0;
+}
+
+dt{
+	margin-top: 7px;
+}
+
+dd{
+	font-size: .9em;
+	color: #2E2EFE;
+}
+
+
+.header{
+	height:850px;
+	background: 
+	linear-gradient(#070b19, transparent 60%),
+	linear-gradient(0deg, #fff, transparent),
+	url('./../img/knife') no-repeat center;
+}
+
+
+.header2{
+	height:220px;
+	background: 
+	linear-gradient(#070b19, transparent 90%),
+	linear-gradient(0deg, #fff, transparent),
+	url('./../img/knife') no-repeat center;
+}
+
+.titulo{
+	color: white;
+	font-size: 1.6em;
+	letter-spacing: .6em;
+	padding-bottom: 10px;
+}
+
+.primera-seccion, .header, .footer{
+	text-align: center;
+}
+
+.primera-seccion, .footer{
+	padding-top:15px;
+	padding-bottom: 15px;
+	border-bottom: 10px solid rgba(150,0,0,0.8);
+	border-radius: 0px;
+}
+
+.segunda-seccion{
+	padding-top:80px;
+	padding-bottom: 70px;
+	border-bottom: 2px solid #DFE2E6;
+}
+
+.vision-mision{
+	font-size: 2.50em;
+	border-bottom: 3px solid;
+	text-decoration: none;
+	padding: 0 9px 3px;
+	margin-top: 20px;
+}
+
+.primera-seccion, .segunda-seccion{
+	width: 75%;
+	padding-left: 50px;
+	padding-right: 50px;
+	margin:auto;
+	max-width: 960px;
+}
+
+.objetivo{
+	color: #070b19;
+	text-align: center;
+	padding: 18% 24%;
+	border-top: 10px solid rgba(150,0,0,0.8);
+	margin: 80px 0 0px;
+	background: url('./../img/unam.png') no-repeat center;
+	background-size: cover;
+	border-radius: 20px;
+}
+
+.izq, .der, .centro{
+	width:45%;
+	color: #660000;
+	font-size: 1.6em;
+}
+
+.centro{
+	display:inline-block;
+}
+
+.izq{
+	float:left;
+	padding-left: 2px;
+}
+
+.der{
+	float: right;
+}
+
+.segunda-seccion:after, .tercera-seccion:after{
+	content: "";
+	display: block;
+	clear: both;  /*Características de un contenedor en blanco*/
+}
+
+.container-fluid{
+	padding: 0px;
+
+}
+
+
+
+
+
+
+.form-control{
+	border-color: #800000;  
+	box-shadow: none; -webkit-box-shadow: none;
+}
+
+/*.form-control:focus{
+	border: solid 1px;
+	border-color: #800000;
+}*/
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.form-control:focus {   
+	  border-color: #800000;
+	  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.025) inset, 0 0 3px #000;
+	      outline: 0 none;
+}
+
+
+
+.explain{
+	font-size: 14px;
+	color: #4d0000;
+}
+
+.btn{
+	background-color: #4d0000;
+	color: #ffffff;
+}
+
+.encryption-algorythm{
+	padding-bottom: 30px;
+}
+
+.section-limit{
+	padding-bottom: 70px;
+	border-bottom: solid 1px;
+	border-color: #e0e0d1;
+}

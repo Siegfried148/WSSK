@@ -1,0 +1,25 @@
+{% extends 'tools/base.html' %}
+{% block content %}
+	<br><br>
+	<form name = "form" action = "{% url "passive" %}" method = "POST" >{% csrf_token %} 
+		<div class="row">
+			<div class="col-md-6 col-md-offset-1">
+				<input type = "text"  class="form-control" placeholder = "IP address or domain name" name = "ip_address" />
+			</div>
+			<div class="col-md-3">
+				<input type = "text"  class="form-control" placeholder = "PORT" name = "port" />
+			</div>
+		</div>
+	        <br>
+		<div class="row">
+			<div class="col-md-5 col-md-offset-1">
+			       	<button type = "submit" value = "Submit" >
+					<strong>Submit</strong>
+				</button>
+			</div>
+		</div>
+	</form>
+
+
+	
+{% endblock %}

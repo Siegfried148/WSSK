@@ -1,0 +1,340 @@
+{% extends 'tools/base.html' %}
+{% block content %}
+	<br>
+	<!--text encoder -->
+		{% if form.errors %}
+			{% for field in form %}
+		        	{% for error in field.errors %}
+			        	<div class="alert alert-danger">
+						<strong>{{ error|escape }}</strong>
+					</div>
+				{% endfor %}
+			{% endfor %}
+			{% for error in form.non_field_errors %}
+				<div class="alert alert-danger">
+					<strong>{{ error|escape }}</strong>
+				</div>
+			{% endfor %}
+		{% endif %}
+		<div class="row" id="encoder">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Text encoder/decoder</h3>
+				<p>This tool can convert text in different formats. Just write the message in the box that has its format, 
+				convert it and it will be displayed in all the available formats.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 col-lg-6 explain">
+				<form name = "form" action = "{% url "crypto" %}#encoder" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">ASCII</label>
+								<textarea class="form-control" rows="5" id="ascii" name="text">{{ ascii }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="ascii_btn">
+								<strong>Convert</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-6 col-lg-6 explain">
+				<form name = "form" action = "{% url "crypto" %}#encoder" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">Base 64</label>
+								<textarea class="form-control" rows="5" id="base64" name="text">{{ base64 }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="base64_btn">
+								<strong>Convert</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<br><br><br>
+		<div class="row section-limit">
+			<div class="col-md-6 col-lg-6 explain">
+				<form name = "form" action = "{% url "crypto" %}#encoder" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">URL</label>
+								<textarea class="form-control" rows="5" id="url" name="text">{{ url  }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="url_btn">
+								<strong>Convert</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-6 col-lg-6 explain">
+				<form name = "form" action = "{% url "crypto" %}#encoder" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">Hex</label>
+								<textarea class="form-control" rows="5" id="hex" name="text" >{{ hex }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="hex_btn">
+								<strong>Convert</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	<!--hash calculator-->
+		<div class="row" id="calculator">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Hash calculator</h3>
+				<p>Just type the message in the box and the tool will calculate its hash using all the available algorythms.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-8 col-lg-8 explain">
+				<form name = "form" action = "{% url "crypto" %}#calculator" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">TEXT</label>
+								<textarea class="form-control" rows="5" id="text" name="text">{{ hash_text }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="hash_btn">
+								<strong>Calculate</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<br>
+		<div class="row section-limit">
+			<div class="col-md-10 col-lg-10 col-lg-offset-1 col-md-offset-1 explain">
+				<table class="table table-hover table-sm table-responsive">
+					<thead>
+						<tr>
+							<th>Algorythm</th>
+						        <th>Hash</th>
+						</tr>
+					</thead>
+					<tbody>
+			      			<tr>
+							<td>MD4</td>
+							<td>{{ md4  }}</td>
+		      				</tr>
+			      			<tr>
+							<td>MD5</td>
+							<td>{{ md5  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>SHA1</td>
+							<td>{{ sha1  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>SHA224</td>
+							<td>{{ sha224  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>SHA256</td>
+							<td>{{ sha256  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>SHA384</td>
+							<td>{{ sha384  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>SHA512</td>
+							<td>{{ sha512  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>NTLM</td>
+							<td>{{ ntlm  }}</td>
+				      		</tr>
+				    	</tbody>
+				  </table>	
+			</div>
+		</div>
+		<!--cryptographic algorythms-->
+		<div class="row">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Cipher</h3>
+				<p>This tool can encrypt and decrypt messages using some classic algorythms. Type de message
+				in the box and click the button to get the result.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row" id="caesar">
+			<div class="col-md-7 col-lg-7">
+				<h4>Caesar Cipher</h4>
+				<p>The key must be a number.</p>
+			</div>
+       		</div>
+		<div class="row encryption-algorythm">
+			<div class="col-md-11 col-lg-11 col-md-offset-1 col-lg-offset-1 explain">
+				<form name = "form" action = "{% url "crypto" %}#caesar" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-lg-5">
+							<div class="form-group">
+								<label for="comment">Message</label>
+								<textarea class="form-control" rows="5" name="clear_text">{{ clear_caesar }}</textarea>
+							</div>
+						</div>
+						<div class="col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">Cryptogram</label>
+								<textarea class="form-control" rows="5" name="encrypted_text">{{ encrypted_caesar }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class ="col-md-4 col-lg-4">
+							<div class="form-group">
+								{% if key_caesar %}
+								<input type="text" class="form-control" value={{ key_caesar }} name="key">
+								{% else %}
+								<input type="text" class="form-control" value="13" name="key">
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 col-lg-3">
+						       	<button class="btn" type = "submit" value = "Encrypt" name="caesar_e_btn" >
+								<strong>Encrypt</strong>
+							</button>
+						</div>
+						<div class="col-md-3 col-md-offset-3 col-lg-3 col-lg-offset-3">
+						       	<button class="btn" type = "submit" value = "Decrypt" name="caesar_d_btn" >
+								<strong>Decrypt</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-7 col-lg-7" id="monoalphabetic">
+				<h4>Monoalphabetic substitution</h4>
+				<p>The key will be the alphabet which will be used to bustitute the original one. It must only contain 26 letters.</p>
+			</div>
+       		</div>
+		<div class="row encryption-algorythm">
+			<div class="col-md-11 col-lg-11 col-md-offset-1 col-lg-offset-1 explain">
+				<form name = "form" action = "{% url "crypto" %}#monoalphabetic" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-lg-5">
+							<div class="form-group">
+								<label for="comment">Message</label>
+								<textarea class="form-control" rows="5" name="clear_text">{{ clear_monoalphabetic }}</textarea>
+							</div>
+						</div>
+						<div class="col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">Cryptogram</label>
+								<textarea class="form-control" rows="5" name="encrypted_text">{{ encrypted_monoalphabetic }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class ="col-md-4 col-lg-4">
+							<div class="form-group">
+								{% if key_monoalphabetic %}
+								<input type="text" class="form-control" value={{ key_monoalphabetic }} name="key">
+								{% else %}
+								<input type="text" class="form-control" value="QWERTYUIOPASDFGHJKLZXCVBNM" name="key">
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 col-lg-3">
+						      	<button class="btn" type = "submit" value = "Submit1" name="monoalphabetic_e_btn" >
+								<strong>Encrypt</strong>
+							</button>
+						</div>
+						<div class="col-md-3 col-md-offset-3 col-lg-3 col-lg-offset-3">
+						       	<button class="btn" type = "submit" value = "Submit2" name="monoalphabetic_d_btn" >
+								<strong>Decrypt</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-7 col-lg-7" id="vigenere">
+				<h4>Vigenere Cipher</h4>
+				<p>The key must be a word. The longer the word, the stronger the algorythm.</p>
+			</div>
+       		</div>
+		<div class="row encryption-algorythm section-limit">
+			<div class="col-md-11 col-lg-11 col-md-offset-1 col-lg-offset-1 explain">
+				<form name = "form" action = "{% url "crypto" %}#vigenere" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-lg-5">
+							<div class="form-group">
+								<label for="comment">Message</label>
+								<textarea class="form-control" rows="5" name="clear_text">{{ clear_vigenere }}</textarea>
+							</div>
+						</div>
+						<div class="col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">Cryptogram</label>
+								<textarea class="form-control" rows="5" name="encrypted_text">{{ encrypted_vigenere }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class ="col-md-4 col-lg-4">
+							<div class="form-group">
+								{% if key_vigenere %}
+								<input type="text" class="form-control" value={{ key_vigenere }} name="key">
+								{% else %}
+								<input type="text" class="form-control" value="MYKEY" name="key">
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 col-lg-3">
+						       	<button class="btn" type = "submit" value = "Submit1" name="vigenere_e_btn" >
+								<strong>Encrypt</strong>
+							</button>
+						</div>
+						<div class="col-md-3 col-md-offset-3 col-lg-3 col-lg-offset-3">
+						       	<button class="btn" type = "submit" value = "Submit2" name="vigenere_d_btn" >
+								<strong>Decrypt</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+{% endblock %}
