@@ -16,3 +16,7 @@ class EncryptionForm(forms.Form):
     clear_text = forms.CharField(widget=forms.Textarea, required=False)    
     encrypted_text = forms.CharField(widget=forms.Textarea, required=False)
     key = forms.CharField(max_length = 80, required=False)
+
+class KeygenForm(forms.Form):
+    options = (('1024','1024'),('2048','2048'))
+    keylength = forms.ChoiceField(choices = options)

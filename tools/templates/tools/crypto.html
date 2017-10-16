@@ -137,7 +137,7 @@
 		<br>
 		<div class="row section-limit">
 			<div class="col-md-10 col-lg-10 col-lg-offset-1 col-md-offset-1 explain">
-				<table class="table table-hover table-sm table-responsive">
+				<table class="table table-hover" style="overflow-x:auto;">
 					<thead>
 						<tr>
 							<th>Algorythm</th>
@@ -294,7 +294,7 @@
 				<p>The key must be a word. The longer the word, the stronger the algorythm.</p>
 			</div>
        		</div>
-		<div class="row encryption-algorythm section-limit">
+		<div class="row encryption-algorythm">
 			<div class="col-md-11 col-lg-11 col-md-offset-1 col-lg-offset-1 explain">
 				<form name = "form" action = "{% url "crypto" %}#vigenere" method = "POST" >{% csrf_token %} 
 					<div class="row">
@@ -335,6 +335,103 @@
 						</div>
 					</div>
 				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-7 col-lg-7" id="transposition">
+				<h4>Transposition Cipher</h4>
+				<p>The key must be a number. The key will be the number of columns to use to rearrange the text. If the length of
+				thext is not a multiple of the key, a padding will be applied to the text. </p>
+			</div>
+       		</div>
+		<div class="row encryption-algorythm section-limit">
+			<div class="col-md-11 col-lg-11 col-md-offset-1 col-lg-offset-1 explain">
+				<form name = "form" action = "{% url "crypto" %}#transposition" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-lg-5">
+							<div class="form-group">
+								<label for="comment">Message</label>
+								<textarea class="form-control" rows="5" name="clear_text">{{ clear_transposition }}</textarea>
+							</div>
+						</div>
+						<div class="col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">Cryptogram</label>
+								<textarea class="form-control" rows="5" name="encrypted_text">{{ encrypted_transposition }}</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class ="col-md-4 col-lg-4">
+							<div class="form-group">
+								{% if key_transposition %}
+								<input type="text" class="form-control" value={{ key_transposition }} name="key">
+								{% else %}
+								<input type="text" class="form-control" value="3" name="key">
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 col-lg-3">
+						       	<button class="btn" type = "submit" value = "Submit1" name="transposition_e_btn" >
+								<strong>Encrypt</strong>
+							</button>
+						</div>
+						<div class="col-md-3 col-md-offset-3 col-lg-3 col-lg-offset-3">
+						       	<button class="btn" type = "submit" value = "Submit2" name="transposition_d_btn" >
+								<strong>Decrypt</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	<!--RSA key pair generator -->
+		<div class="row" id="keygen">
+			<div class="col-md-7 col-lg-7">
+				<h3>RSA key pair generator</h3>
+				<p>This tool will help you to create your RSA key pair in PEM format. Just choose the length and submit it.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-8 col-lg-8 explain">
+				<form name = "form" action = "{% url "crypto" %}#keygen" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-3 col-md-offset-1 col-lg-3 col-lg-offset-1">
+							<div class="form-group">
+								<label for="comment">Key length</label>
+								<select class="form-control" name="keylength">
+									<option class="opt">1024</option>
+									<option class="opt">2048</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="keygen_btn">
+								<strong>Generate</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<br>
+		<div class="row section-limit">
+			<div class="col-md-12 col-lg-12  explain">
+				<div class="row">
+					<div class="col-md-4 col-lg-4 col-md-offset-1 col-lg-offset-1">
+						<label for="comment">Public key</label>
+						<textarea class="form-control" rows="20" name="pub_key">{{ pub_key }}</textarea>
+					</div>
+					<div class="col-md-4 col-lg-4 col-md-offset-1 col-lg-offset-1">
+						<label for="comment">Private key</label>
+						<textarea class="form-control" rows="20" name="priv_key">{{ priv_key }}</textarea>
+					</div>
+				</div>
 			</div>
 		</div>
 {% endblock %}
