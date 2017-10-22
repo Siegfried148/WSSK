@@ -114,7 +114,7 @@ def caesar(mode, text, key):
         new_text = ''.join(message)
         return returnDict('clear_caesar','encrypted_caesar','key_caesar', text, new_text, key, mode)
     except:
-        return returnDict('clear_caesar','encrypted_caesar','key_caesar', 'An error occurred', new_text, key, mode)
+        return returnDict('clear_caesar','encrypted_caesar','key_caesar', text, 'An error occurred.', key, mode)
 
 
 """
@@ -131,16 +131,16 @@ def monoalphabetic(mode, text, key):
         text = text.upper()
         new_text = []
         #Checks if the key has the correct format
-        new_key = list(key.upper().replace(' ','').replace('-',''))
+        new_key = key.upper()
         if len(new_key) != 26 or len(new_key) > len(set(new_key)):
-            raise ValueError('The key does not have the specified format')
+            raise ValueError('The key must have 26 unique chars.')
         for l in new_key:
             if l not in ascii_uppercase:
-                raise ValueError('The key does not have the specified format')
+                raise ValueError('The key must only have letters.')
 
         #Generates the dictionaries to work
         for i in range(26):
-            cipher[key[i]] = ascii_uppercase[i]
+            cipher[ascii_uppercase[i]] = new_key[i]
         for k, v in cipher.iteritems():
             inverse_cipher[v] = k
         #Encrypts
@@ -153,9 +153,9 @@ def monoalphabetic(mode, text, key):
                 else:
                     new_text.append(inverse_cipher[letter])
         #Returns result
-        return returnDict('clear_monoalphabetic','encrypted_monoalphabetic','key_monoalphabetic', text, ''.join(new_text), key, mode)
+        return returnDict('clear_monoalphabetic','encrypted_monoalphabetic','key_monoalphabetic', text, ''.join(new_text), new_key, mode)
     except Exception as e:
-        return returnDict('clear_monoalphabetic','encrypted_monoalphabetic','key_monoalphabetic', e, ''.join(new_text), key, mode)
+        return returnDict('clear_monoalphabetic','encrypted_monoalphabetic','key_monoalphabetic', text, e, new_key, mode)
 
 
 """
@@ -259,8 +259,8 @@ def transposition(mode, text, key):
         else:
             new_text = trans_dec(text, int(key))
         return returnDict('clear_transposition','encrypted_transposition','key_transposition', text, new_text, key, mode)
-    except Exception as e:
-        return returnDict('clear_transposition','encrypted_transposition','key_transposition', text, new_text, key, mode)
+    except:
+        return returnDict('clear_transposition','encrypted_transposition','key_transposition', text, 'An error occurred.', key, mode)
 
 
 def get_keypair(length):

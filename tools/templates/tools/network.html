@@ -1,4 +1,147 @@
 {% extends 'tools/base.html' %}
 {% block content %}
-	<h1>NETWORK</h1>
+	<br><br>
+		<div class="row" id="ip">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>What's my IP address?</h3>
+				<p>This tool will tell you which IP address you are using.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row section-limit">
+			<div class="col-md-8 col-lg-8" id="explain">
+				<form name = "form" action = "{% url "network" %}" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-7 col-md-offset-1 col-lg-7 col-lg-offset-1">
+							{% if pub_ip %}
+							<input type="text" class="form-control" value={{ pub_ip }} name="pub_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="pub_ip">
+							{% endif %}
+						</div>
+					</div>
+				        <br>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="pub_ip_btn" >
+								<strong>What's my IP?</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row" id="ping">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>PING</h3>
+				<p>This tool can send ICMP (ping) messages to an IP address or domain name.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row section-limit">
+			<div class="col-md-11 col-lg-11" id="explain">
+				<form name = "form" action = "{% url "network" %}#ping" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+							<label for="comment">IP address or domain name:</label>
+							{% if ping_ip %}
+							<input type="text" class="form-control" value={{ ping_ip }} name="ping_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="ping_ip">
+							{% endif %}
+						</div>
+						<div class="col-md-4 col-lg-4">
+							<br>
+						       	<button class="btn" type = "submit" value = "Submit" name="ping_btn" >
+								<strong>Ping</strong>
+							</button>
+						</div>
+					</div>
+					<br><br>
+					<div class="row">
+						<div class="col-md-9 col-md-offset-1 col-lg-9 col-lg-offset-1">
+							<label for="comment">Output:</label>
+							<textarea class="form-control" rows="12" id="ping_out" name="ping_out">{{ ping_out }}</textarea>
+						</div>
+					</div>
+				        <br>
+					<div class="row">
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row" id="whois">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Whois</h3>
+				<p>This tool is useful for getting information about a domain.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row section-limit">
+			<div class="col-md-11 col-lg-11" id="explain">
+				<form name = "form" action = "{% url "network" %}#whois" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+							<label for="comment">IP address or domain name:</label>
+							{% if whois_ip %}
+							<input type="text" class="form-control" value={{ whois_ip }} name="whois_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="whois_ip">
+							{% endif %}
+						</div>
+						<div class="col-md-4 col-lg-4">
+							<br>
+							<button class="btn" type = "submit" value = "Submit" name="whois_btn" >
+								<strong>Who is?</strong>
+							</button>
+						</div>
+					</div>
+					<br><br>
+					<div class="row">
+						<div class="col-md-9 col-md-offset-1 col-lg-9 col-lg-offset-1">
+							<label for="comment">Output:</label>
+							<textarea class="form-control" rows="16" id="whois_out" name="whois_out">{{ whois_out }}</textarea>
+						</div>
+					</div>
+				        <br>
+				</form>
+			</div>
+		</div>
+		<div class="row" id="traceroute">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Traceroute</h3>
+				<p>This tool is useful for retrieving information about the route that the packets are following. </p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row section-limit">
+			<div class="col-md-11 col-lg-11" id="traceroute">
+				<form name = "form" action = "{% url "network" %}#traceroute" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+							<label for="comment">IP address or domain name:</label>
+							{% if traceroute_ip %}
+							<input type="text" class="form-control" value={{ traceroute_ip }} name="traceroute_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="traceroute_ip">
+							{% endif %}
+						</div>
+						<div class="col-md-4 col-lg-4">
+							<br>
+							<button class="btn" type = "submit" value = "Submit" name="traceroute_btn" >
+								<strong>Trace the route</strong>
+							</button>
+						</div>
+					</div>
+					<br><br>
+					<div class="row">
+						<div class="col-md-9 col-md-offset-1 col-lg-9 col-lg-offset-1">
+							<label for="comment">Output:</label>
+							<textarea class="form-control" rows="16" id="traceroute_out" name="traceroute_out">{{ traceroute_out }}</textarea>
+						</div>
+					</div>
+				        <br>
+				</form>
+			</div>
+		</div>
 {% endblock %}

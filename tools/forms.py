@@ -20,3 +20,18 @@ class EncryptionForm(forms.Form):
 class KeygenForm(forms.Form):
     options = (('1024','1024'),('2048','2048'))
     keylength = forms.ChoiceField(choices = options)
+
+class PublicIPForm(forms.Form):
+    pub_ip = forms.CharField(max_length = 15, required=False)
+
+class PingForm(forms.Form):
+    ping_ip = forms.CharField(max_length = 100, required=False)
+    ping_out = forms.CharField(widget=forms.Textarea, required=False)    
+
+class WhoisForm(forms.Form):
+    whois_ip = forms.CharField(max_length = 100, required=False)
+    whois_out = forms.CharField(widget=forms.Textarea, required=False)    
+
+class TracerouteForm(forms.Form):
+    traceroute_ip = forms.CharField(max_length = 100, required=False)
+    traceroute_out = forms.CharField(widget=forms.Textarea, required=False)    

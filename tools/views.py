@@ -4,8 +4,10 @@
 from __future__ import unicode_literals
 from django.shortcuts import render
 from .models import Tool
-from .forms import AddressForm, EncoderForm, HashForm, EncryptionForm, KeygenForm
+from .forms import AddressForm, EncoderForm, HashForm, EncryptionForm, KeygenForm, PublicIPForm, PingForm, WhoisForm, TracerouteForm
 from .crypto_lib import *
+from .network_lib import *
+
 
 """
 Renders the main page.
@@ -78,8 +80,8 @@ def passive(request):
     if request.method == "POST":
         address = AddressForm(request.POST)
         if address.is_valid():
-            ip_address = address.cleaned_data('ip_address')
-            port = address.cleaned_data('port')
+            ip_address = address.cleaned_data['ip_address']
+            port = address.cleaned_data['port']
     else:
         address = AddressForm()
 
@@ -94,8 +96,8 @@ def active(request):
     if request.method == "POST":
         address = AddressForm(request.POST)
         if address.is_valid():
-            ip_address = address.cleaned_data('ip_address')
-            port = address.cleaned_data('port')
+            ip_address = address.cleaned_data['ip_address']
+            port = address.cleaned_data['port']
     else:
         address = AddressForm()
 
@@ -107,4 +109,27 @@ def scanner(request):
 
 
 def network(request):
-    return render(request, 'tools/network.html', {})
+    message = ""
+    result_dict = {}
+    if request.method == "POST":
+        #The button from the public ip address section
+        if 'pub_ip_btn' in request.POST:
+            message = PublicIPForm(request.POST)
+            if message.is_valid():
+                result_dict = get_ip(request)
+        elif 'ping_btn' in request.POST:
+            message = PingForm(request.POST)
+            if message.is_valid():
+                ping_ip = message.cleaned_data['ping_ip']
+                result_dict = ping(ping_ip)
+        elif 'whois_btn' in request.POST:
+            message = WhoisForm(request.POST)
+            if message.is_valid():
+                whois_ip = message.cleaned_data['whois_ip']
+                result_dict = whois(whois_ip)
+        elif 'traceroute_btn' in request.POST:
+            message = TracerouteForm(request.POST)
+            if message.is_valid():
+                traceroute_ip = message.cleaned_data['traceroute_ip']
+                result_dict = traceroute(traceroute_ip)
+    return render(request, 'tools/network.html', result_dict)
