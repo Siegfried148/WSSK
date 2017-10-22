@@ -45,7 +45,7 @@
 						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
 							<label for="comment">IP address or domain name:</label>
 							{% if ping_ip %}
-							<input type="text" class="form-control" value={{ ping_ip }} name="ping_ip">
+							<input type="text" class="form-control" value="{{ ping_ip }}" name="ping_ip">
 							{% else %}
 							<input type="text" class="form-control" value="" name="ping_ip">
 							{% endif %}
@@ -84,7 +84,7 @@
 						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
 							<label for="comment">IP address or domain name:</label>
 							{% if whois_ip %}
-							<input type="text" class="form-control" value={{ whois_ip }} name="whois_ip">
+							<input type="text" class="form-control" value="{{ whois_ip }}" name="whois_ip">
 							{% else %}
 							<input type="text" class="form-control" value="" name="whois_ip">
 							{% endif %}
@@ -121,7 +121,7 @@
 						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
 							<label for="comment">IP address or domain name:</label>
 							{% if traceroute_ip %}
-							<input type="text" class="form-control" value={{ traceroute_ip }} name="traceroute_ip">
+							<input type="text" class="form-control" value="{{ traceroute_ip }}" name="traceroute_ip">
 							{% else %}
 							<input type="text" class="form-control" value="" name="traceroute_ip">
 							{% endif %}
@@ -141,6 +141,84 @@
 						</div>
 					</div>
 				        <br>
+				</form>
+			</div>
+		</div>
+		<div class="row" id="lookup">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>DNS lookup</h3>
+				<p>This tool makes DNS queries to get the IP address of a domain name.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row section-limit">
+			<div class="col-md-8 col-lg-8" id="explain">
+				<form name = "form" action = "{% url "network" %}#lookup" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+							<label for="comment">Name:</label>
+							{% if lookup_name %}
+							<input type="text" class="form-control" value="{{ lookup_name }}" name="lookup_name">
+							{% else %}
+							<input type="text" class="form-control" value="" name="lookup_name">
+							{% endif %}
+						</div>
+						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+							<label for="comment">IP Address:</label>
+							{% if lookup_ip %}
+							<input type="text" class="form-control" value="{{ lookup_ip }}" name="lookup_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="lookup_ip">
+							{% endif %}
+						</div>
+					</div>
+				        <br>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="lookup_btn" >
+								<strong>Lookup</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row" id="reverse">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Reverse lookup</h3>
+				<p>This tool makes DNS queries to get the domain name of a specified IP address.</p>
+				<br><br>
+			</div>
+		</div>
+		<div class="row section-limit">
+			<div class="col-md-8 col-lg-8" id="explain">
+				<form name = "form" action = "{% url "network" %}#reverse" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+							<label for="comment">IP address:</label>
+							{% if reverse_ip %}
+							<input type="text" class="form-control" value="{{ reverse_ip }}" name="reverse_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="reverse_ip">
+							{% endif %}
+						</div>
+						<div class="col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+							<label for="comment">Name:</label>
+							{% if reverse_name %}
+							<input type="text" class="form-control" value="{{ reverse_name }}" name="reverse_name">
+							{% else %}
+							<input type="text" class="form-control" value="" name="reverse_name">
+							{% endif %}
+						</div>
+					</div>
+				        <br>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-md-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="reverse_btn" >
+								<strong>Reverse Lookup</strong>
+							</button>
+						</div>
+					</div>
 				</form>
 			</div>
 		</div>

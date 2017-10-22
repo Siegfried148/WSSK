@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+#Castro Rendón Virgilio
 from subprocess import check_output, Popen, PIPE, STDOUT
+from socket import gethostbyname, gethostbyaddr
+
 """
 Uses HTTP requests to determine the original IP address
 """
@@ -17,18 +20,28 @@ def get_ip(request):
 
 def ping(ip):
     try:
-        process = Popen(['ping', ip, '-c', '5','-i','.4'], stdout=PIPE, stderr=STDOUT)
-        code = process.wait()
-        return {'ping_ip':ip, 'ping_out':process.stdout.read()}
+        if ip == '':
+            output = 'Specify an IP address or domain name.'
+        else:
+            process = Popen(['ping', ip, '-c', '5','-i','.4'], stdout=PIPE, stderr=STDOUT)
+            code = process.wait()
+            output = process.stdout.read()
+        if "Name or service not known" not in output:
+            return {'ping_ip':ip, 'ping_out':output}  
+        else:
+            return {'ping_ip':ip, 'ping_out':'Could not resolve name: \'%s\' ' % ip}  
     except Exception as e:
         return {'ping_ip':ip, 'ping_out':'An error ocurred.'}
 
         
 def whois(site):
     try:
-        process = Popen(['whois', site, '-H'], stdout=PIPE, stderr=STDOUT)
-        code = process.wait()
-        output = process.stdout.read()
+        if site == '':
+            output = 'Specify an IP address or domain name.'
+        else:
+            process = Popen(['whois', site, '-H'], stdout=PIPE, stderr=STDOUT)
+            code = process.wait()
+            output = process.stdout.read()
         if "Invalid_String" not in output:
             return {'whois_ip':site, 'whois_out':output}
         else:
@@ -39,12 +52,30 @@ def whois(site):
 
 def traceroute(site):
     try:
-        process = Popen(['traceroute', site], stdout=PIPE, stderr=STDOUT)
-        code = process.wait()
-        output = process.stdout.read()
+        if site == '':
+            output = 'Specify an IP address or domain name.'
+        else:
+            process = Popen(['traceroute', site], stdout=PIPE, stderr=STDOUT)
+            code = process.wait()
+            output = process.stdout.read()
         if "Name or service not known" not in output:
             return {'traceroute_ip':site, 'traceroute_out':output}  
         else:
-            return {'traceroute_ip':site, 'traceroute_out':'Could not resolve name ' + site}  
+            return {'traceroute_ip':site, 'traceroute_out':'Could not resolve name: \'%s\' ' % site}  
     except Exception as e:
         return {'traceroute_ip':site, 'traceroute_out':'An error ocurred.'}
+
+def lookup(name):
+    try:
+        ip = gethostbyname(name)
+        return {'lookup_name':name,'lookup_ip':ip}
+    except:
+        return {'lookup_name':name,'lookup_ip':'An error ocurred.'}
+
+def reverse(ip):
+    try:
+        name = gethostbyaddr(ip)[0]
+        return {'reverse_ip':ip,'reverse_name':name}
+    except:
+        return {'reverse_ip':ip,'reverse_name':'No PTR record for %s' % ip}
+

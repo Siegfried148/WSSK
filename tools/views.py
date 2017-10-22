@@ -4,7 +4,8 @@
 from __future__ import unicode_literals
 from django.shortcuts import render
 from .models import Tool
-from .forms import AddressForm, EncoderForm, HashForm, EncryptionForm, KeygenForm, PublicIPForm, PingForm, WhoisForm, TracerouteForm
+#from .forms import AddressForm, EncoderForm, HashForm, EncryptionForm, KeygenForm, PublicIPForm, PingForm, WhoisForm, TracerouteForm, LookupForm, ReverseForm
+from .forms import *
 from .crypto_lib import *
 from .network_lib import *
 
@@ -132,4 +133,14 @@ def network(request):
             if message.is_valid():
                 traceroute_ip = message.cleaned_data['traceroute_ip']
                 result_dict = traceroute(traceroute_ip)
+        elif 'lookup_btn' in request.POST:
+            message = LookupForm(request.POST)
+            if message.is_valid():
+                lookup_name = message.cleaned_data['lookup_name']
+                result_dict = lookup(lookup_name)
+        elif 'reverse_btn' in request.POST:
+            message = ReverseForm(request.POST)
+            if message.is_valid():
+                reverse_ip = message.cleaned_data['reverse_ip']
+                result_dict = reverse(reverse_ip)
     return render(request, 'tools/network.html', result_dict)

@@ -25,13 +25,21 @@ class PublicIPForm(forms.Form):
     pub_ip = forms.CharField(max_length = 15, required=False)
 
 class PingForm(forms.Form):
-    ping_ip = forms.CharField(max_length = 100, required=False)
+    ping_ip = forms.CharField(max_length = 150, required=False)
     ping_out = forms.CharField(widget=forms.Textarea, required=False)    
 
 class WhoisForm(forms.Form):
-    whois_ip = forms.CharField(max_length = 100, required=False)
+    whois_ip = forms.CharField(max_length = 150, required=False)
     whois_out = forms.CharField(widget=forms.Textarea, required=False)    
 
 class TracerouteForm(forms.Form):
-    traceroute_ip = forms.CharField(max_length = 100, required=False)
+    traceroute_ip = forms.CharField(max_length = 150, required=False)
     traceroute_out = forms.CharField(widget=forms.Textarea, required=False)    
+
+class LookupForm(forms.Form):
+    lookup_name = forms.CharField(max_length = 150, required=False)
+    lookup_ip = forms.CharField(max_length = 15, required=False)
+
+class ReverseForm(forms.Form):
+    reverse_ip = forms.CharField(max_length = 15, required=False)
+    reverse_name = forms.CharField(max_length = 150, required=False)
