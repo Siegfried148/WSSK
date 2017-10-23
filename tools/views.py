@@ -8,6 +8,7 @@ from .models import Tool
 from .forms import *
 from .crypto_lib import *
 from .network_lib import *
+from .passive_lib import *
 
 
 """
@@ -75,32 +76,30 @@ def crypto(request):
 
 
 def passive(request):
-    ip_address = "Valid IP address or domain name"
-    port = "80"
-
+    result_dict = {'passive_port':'80'}
     if request.method == "POST":
-        address = AddressForm(request.POST)
-        if address.is_valid():
-            ip_address = address.cleaned_data['ip_address']
-            port = address.cleaned_data['port']
-    else:
-        address = AddressForm()
-
-    return render(request, 'tools/passive.html', {'ip_address':ip_address, 'port':port})
+        if 'passive_btn' in request.POST:
+            message = PassiveForm(request.POST)
+            if message.is_valid():
+                ip = message.cleaned_data['passive_ip']
+                port = message.cleaned_data['passive_port']
+                protocol = message.cleaned_data['protocol']
+                result_dict = passive_analysis(ip, port, protocol)
+    return render(request, 'tools/passive.html', result_dict)
 
 
 
 def active(request):
     ip_address = "Valid IP address or domain name"
     port = "80"
-
+    message = ""
+    result_dict = {}
     if request.method == "POST":
-        address = AddressForm(request.POST)
-        if address.is_valid():
-            ip_address = address.cleaned_data['ip_address']
-            port = address.cleaned_data['port']
-    else:
-        address = AddressForm()
+        #The button from the public ip address section
+        if 'pub_ip_btn' in request.POST:
+            message = PublicIPForm(request.POST)
+            if message.is_valid():
+                result_dict = get_ip(request)
 
     return render(request, 'tools/active.html', {'ip_address':ip_address, 'port':port})
 

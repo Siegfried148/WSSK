@@ -1,25 +1,208 @@
 {% extends 'tools/base.html' %}
 {% block content %}
 	<br><br>
-	<form name = "form" action = "{% url "passive" %}" method = "POST" >{% csrf_token %} 
-		<div class="row">
-			<div class="col-md-6 col-md-offset-1">
-				<input type = "text"  class="form-control" placeholder = "IP address or domain name" name = "ip_address" />
-			</div>
-			<div class="col-md-3">
-				<input type = "text"  class="form-control" placeholder = "PORT" name = "port" />
+		<div class="row" id="passive">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Passive analysis</h3>
+				<br>
 			</div>
 		</div>
-	        <br>
 		<div class="row">
-			<div class="col-md-5 col-md-offset-1">
-			       	<button type = "submit" value = "Submit" >
-					<strong>Submit</strong>
-				</button>
+			<div class="col-md-8 col-lg-8" id="explain">
+				<form name = "form" action = "{% url "passive" %}#results" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-7 col-md-offset-1 col-lg-7 col-lg-offset-1">
+							<label for="comment">IP address or domain name:</label>
+							{% if passive_ip %}
+							<input type="text" class="form-control" value="{{ passive_ip }}" name="passive_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="passive_ip">
+							{% endif %}
+						</div>
+						<div class="col-md-4 col-lg-4">
+							<label for="comment">Port:</label>
+							{% if passive_port %}
+							<input type="text" class="form-control" value="{{ passive_port }}" name="passive_port">
+							{% else %}
+							<input type="text" class="form-control" value="" name="passive_port">
+							{% endif %}
+						</div>
+					</div>
+				        <br>
+					<div class="row">
+						<div class="col-md-4 col-md-offset-1 col-lg-4 col-lg-offset-1 ">
+							<label for="comment">Protocol</label>
+							<select class="form-control" name="protocol">
+								<option class="opt">HTTP</option>
+								<option class="opt">HTTPS</option>
+							</select>
+						</div>
+					</div>
+					<br>
+					<div class="row">
+						<div class="col-md-8 col-md-offset-1 col-lg-8 col-lg-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="passive_btn" >
+								<strong>Start analysis</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-4 col-lg-4 explain">
+				This tool will analyze a web server looking for special files that can be helpful fot attackers to get information about the server.
+				Specifically, this tool will look for:
+				<br><br>
+				<ul class="list-group">
+					<li class="list-group-item">Web server fingerprint</li>
+			    		<li class="list-group-item">HTTP header analysis</li> 
+		    			<li class="list-group-item">Active HTTP methods</li> 
+		    			<li class="list-group-item">Multiple index files</li> 
+		    			<li class="list-group-item">Verify installation directories</li> 
+		    			<li class="list-group-item">HTTPS and certificate analysis</li> 
+				</ul>	    
 			</div>
 		</div>
-	</form>
+		<div class="row section-limit">
+			<div class="col-md-10 col-lg-10 col-lg-offset-1 col-md-offset-1 explain">
+				{% if error %}
+					<input type="text" id="results" class="form-control" value="{{ error }}">
+				{% endif %}
+				{% if result %}
+				<div class="row" id="results">
+					<div class="col-md-7 col-lg-7 ">
+						<h3>Passive analysis results</h3>
+						<br>
+					</div>
+				</div>
+				<table class="table table-hover" style="overflow-x:auto;">
+					<thead>
+						<tr>
+							<th>Feature</th>
+						        <th>Result</th>
+						</tr>
+					</thead>
+					<tbody>
+				      		<tr>
+				        		<td>HTTP methods</td>
+							<td>{{ http_methods  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Multiple index files</td>
+							<td>{{ index_files  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>robots.txt file</td>
+							<td>{{ robots_file  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Installation directories</td>
+							<td>{{ install_dir  }}</td>
+				      		</tr>
+				    	</tbody>
+				</table>
+				<br>	
+				<div class="row">
+					<div class="col-md-7 col-lg-7 ">
+						<h3>HTTP header analysis</h3>
+						<br>
+					</div>
+				</div>
+				<table class="table table-hover" style="overflow-x:auto;">
+					<thead>
+						<tr>
+							<th>HTTP header</th>
+						        <th>Result</th>
+						</tr>
+					</thead>
+					<tbody>
+			      			<tr>
+							<td>Web server signature</td>
+							<td>{{ signature  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>PHP version</td>
+							<td>{{ php_version  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>X-XSS-Protection</td>
+							<td>{{ x_xss_protection  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>X-Frame-Options</td>
+							<td>{{ x_frame_options  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>X-Content-Type-Options</td>
+							<td>{{ x_content_type_options  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>HTTP Strict transport security</td>
+							<td>{{ hsts  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Set-Cookie: secure</td>
+							<td>{{ setcookie_secure  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Set-Cookie: HTTP Only</td>
+							<td>{{ setcookie_httponly  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Test</td>
+							<td>{{ test  }}</td>
+				      		</tr>
+				    	</tbody>
+				</table>	
+				<br>	
+				<div class="row">
+					<div class="col-md-7 col-lg-7 ">
+						<h3>HTTPS analysis</h3>
+						<br>
+					</div>
+				</div>
+				<table class="table table-hover" style="overflow-x:auto;">
+					<thead>
+						<tr>
+							<th>Feature</th>
+						        <th>Result</th>
+						</tr>
+					</thead>
+					<tbody>
+			      			<tr>
+							<td>Domain</td>
+							<td>{{ cert_domain  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>CA</td>
+							<td>{{ cert_ca  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Validity</td>
+							<td>{{ cert_validity  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Encryption algorithm</td>
+							<td>{{ ca_algorithm  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Key</td>
+							<td>{{ ca_key  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Supported SSL/TLS protocols </td>
+							<td>{{ ssl_protocols  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>Supported encryption suited</td>
+							<td>{{ ssl_suites  }}</td>
+				      		</tr>
+				    	</tbody>
+				</table>	
+				{% endif %}
+			</div>
+		</div>
 
 
 	
 {% endblock %}
+

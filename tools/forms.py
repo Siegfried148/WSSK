@@ -43,3 +43,9 @@ class LookupForm(forms.Form):
 class ReverseForm(forms.Form):
     reverse_ip = forms.CharField(max_length = 15, required=False)
     reverse_name = forms.CharField(max_length = 150, required=False)
+
+class PassiveForm(forms.Form):
+    options = (('HTTP','HTTP'),('HTTPS','HTTPS'))
+    passive_ip = forms.CharField(max_length = 150, required=False)
+    passive_port = forms.CharField(max_length = 5, required=False)
+    protocol = forms.ChoiceField(choices = options, required=False)
