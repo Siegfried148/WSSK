@@ -76,7 +76,7 @@ def crypto(request):
 
 
 def passive(request):
-    result_dict = {'passive_port':'80'}
+    result_dict = {'prot_opt1':'HTTP','prot_opt2':'HTTPS', 'passive_port':'80'}
     if request.method == "POST":
         if 'passive_btn' in request.POST:
             message = PassiveForm(request.POST)
@@ -84,7 +84,14 @@ def passive(request):
                 ip = message.cleaned_data['passive_ip']
                 port = message.cleaned_data['passive_port']
                 protocol = message.cleaned_data['protocol']
-                result_dict = passive_analysis(ip, port, protocol)
+                if protocol == 'HTTP':
+                    prot_opt1 = 'HTTP'
+                    prot_opt2 = 'HTTPS'
+                else:
+                    prot_opt1 = 'HTTPS'
+                    prot_opt2 = 'HTTP'
+                result_dict.update({'prot_opt1':prot_opt1,'prot_opt2':prot_opt2, 'passive_port':port, 'passive_ip':ip})
+                result_dict.update(passive_analysis(ip, port, protocol))
     return render(request, 'tools/passive.html', result_dict)
 
 
