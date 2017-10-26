@@ -168,7 +168,7 @@
 				{% if error3 %}
 					<input type="text" id="results" class="form-control" value="{{ error3 }}">
 				{% endif %}
-				<table class="table table-hover" style="overflow-x:auto;">
+				<table class="table table-hover table-responsive" style="overflow-x:auto;">
 					<thead>
 						<tr>
 							<th>Feature</th>
@@ -190,11 +190,14 @@
 				      		</tr>
 				      		<tr>
 				        		<td>Encryption algorithm</td>
-							<td>{{ ca_algorithm  }}</td>
+							<td>{{ cert_algorithm  }}</td>
 				      		</tr>
 				      		<tr>
 				        		<td>Key</td>
-							<td>{{ ca_key  }}</td>
+							<td>{% for line in ca_key  %}
+								<br>{{ line }}
+							    {% endfor %}
+							</td>
 				      		</tr>
 				      		<tr>
 				        		<td>Supported SSL/TLS protocols </td>

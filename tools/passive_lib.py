@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 #Castro Rendón Virgilio
 from requests import get, options
-from ssl import create_default_context, CERT_NONE
+from ssl import create_default_context, DER_cert_to_PEM_cert
 from socket import socket
-
+from M2Crypto import X509
+import Crypto.PublicKey.RSA
+from struct import unpack
+from binascii import hexlify
 
 def check_methods(url):
     try:
@@ -99,28 +102,57 @@ def get_domain(cert):
 def get_ca(cert):
     ca = ''
     if 'issuer' in cert:
-#        for value in cert['issuer']:
-#            if value[0] == 'commonName':
-#                ca += '%s, ' % value[1]
-        return {'cert_ca': cert['issuer']}
+        issuer = dict(x[0] for x in cert['issuer'])
+        issued_by = issuer['commonName']
+        return {'cert_ca': issued_by}
+
+def get_validity(cert):
+    validity = '%s -- %s' % (cert['notBefore'],cert['notAfter'])
+    return {'cert_validity':validity}
+
+def get_algorithm(ssl_socket):
+    cipher = ssl_socket.cipher()
+    cipher_name = cipher[0]
+    ssl_version = cipher[1]
+    length = cipher[2]
+    result = '%s (%s - %s)' % (cipher_name, ssl_version, length)
+    return {'cert_algorithm':result}
+
+
+def get_key(raw_cert):
+    try:
+        m2cert = X509.load_cert_string(raw_cert, X509.FORMAT_DER)
+        pub_key = m2cert.get_pubkey().as_der()
+        hex_pub = str(hexlify(pub_key)).upper()
+        pub_array = [hex_pub[i:i+28] for i in range(0, len(hex_pub), 28)]
+        for i in range(len(pub_array)):
+            pub_array[i] = ' '.join(pub_array[i][j:j+2] for j in range(0,len(pub_array[i]),2))        
+        return {'ca_key':pub_array}
+    except Exception as e:
+        return {'error3':e}
+
 
 def check_certificate(ip, port=443):
+    result = {}
     try:
-        ctx = create_default_context()
-        ctx.check_hostname = False
-        s = ctx.wrap_socket(socket(), server_hostname=ip)
-        s.connect((ip, port))
-        cert = s.getpeercert()
-     
-        result = {}
-        result.update(get_domain(cert))
-        result.update(get_ca(cert))
-        result.update({'ssl_suites':cert})
-
-        return result
+         ctx = create_default_context()
+	 ctx.check_hostname = False
+	 ssl_socket = ctx.wrap_socket(socket(), server_hostname=ip)
+	 ssl_socket.connect((ip, port))
+	 cert = ssl_socket.getpeercert()
+	 raw_cert = ssl_socket.getpeercert(1)
+	 result = {}
+	 result.update(get_domain(cert))
+	 result.update(get_ca(cert))
+	 result.update(get_validity(cert))
+	 result.update(get_algorithm(ssl_socket))
+	 result.update(get_key(raw_cert))
+	 result.update({'ssl_suites':cert})
+         return result
         
     except Exception as e:
-        return {'cert_domain':e}
+        result.update({'error3':e})
+        return result
 
 
 
