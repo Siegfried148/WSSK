@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 #Castro Rendón Virgilio
-from requests import get, options
-from ssl import create_default_context, DER_cert_to_PEM_cert
+from requests import get, options, Session
+from ssl import create_default_context, PROTOCOL_SSLv23, PROTOCOL_TLSv1, PROTOCOL_TLSv1_1, PROTOCOL_TLSv1_2 
 from socket import socket
 from M2Crypto import X509
-import Crypto.PublicKey.RSA
-from struct import unpack
 from binascii import hexlify
+from .httpAdapters import *
 
+"""
+Sends an HTTP request using the OPTIONS method
+This is useful to determine which other HTTP methods it supports 
+"""
 def check_methods(url):
     try:
         response = options(url, verify=False, timeout=6)
@@ -20,7 +23,11 @@ def check_methods(url):
         return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
-
+"""
+This functions sends an HTTP request using the GET method
+It asks for each possible "index" file. If answer's code is 200,
+it supposes that it has the file
+"""
 def check_index(url):
     try:
         indexes = ['index.html','index.htm','index.php','index.asp', 'index.phtml', 'index.cgi', 'index.xhtml']
@@ -34,6 +41,10 @@ def check_index(url):
         return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
+"""
+Sends an HTTP request looking for a ROBOTS file, if code is 200,
+it supposes that the file exists
+"""
 def check_robots(url):
     try:
         response = get('%s/%s' % (url,'robots.txt'), verify=False, timeout=6)
@@ -43,6 +54,10 @@ def check_robots(url):
         return {'error1':  'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
+"""
+It looks for installation directories, if the answer's code is 200 (correct) or 403 (forbbiden),
+the directory exists.
+"""
 def check_install(url):
     try:
         directories = ['setup','install']
@@ -57,7 +72,10 @@ def check_install(url):
         return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
-
+"""
+This function looks for the HTTP headers. Sends an HTTP request using GET option.
+Checks the answer looking for the headers.
+"""
 def check_headers(url):
     try:
 	    response = get(url, verify=False, timeout=6)
@@ -68,6 +86,8 @@ def check_headers(url):
 	    x_frame_options = headers['X-Frame-Options'] if 'X-Frame-Options' in headers else 'Header is not set'
 	    x_content_type_options = headers['X-Content-Type-Options'] if 'X-Content-Type-Options' in headers else 'Header is not set'
 	    hsts = headers['Strict-Transport-Security'] if 'Strict-Transport-Security' in headers else 'Header is not set'
+	    cms = headers['X-Generated-By'] if 'x-Generated-By' in headers else 'Header is not set'
+	    cms_version = headers['X-Cms-Version'] if 'X-Cms-Version' in headers else 'Header is not set'
 	    #Set-Cookie options
 	    if 'Set-Cookie' in headers:
 	       cookie_header = headers['Set-Cookie']
@@ -85,12 +105,17 @@ def check_headers(url):
 	            'x_content_type_options':x_content_type_options,
 	            'hsts':hsts,
 	            'setcookie_secure':setcookie_secure,
-                    'setcookie_httponly':setcookie_httponly}
+                    'setcookie_httponly':setcookie_httponly,
+                    'cms':cms,
+                    'cms_version':cms_version}
     except Exception as e:
         return {'error2': 'HTTP Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
-
+"""
+Receives an already crafted certificate.
+Looks for the domain name of the SUBJECT
+"""
 def get_domain(cert):
     domain = ''
     if 'subjectAltName' in cert:
@@ -99,6 +124,11 @@ def get_domain(cert):
                 domain += '%s, ' % value[1]
         return {'cert_domain': domain[:-2]}
 
+
+"""
+Receibes an already crafted certificate.
+Looks for the domain name of the ISSUER
+"""
 def get_ca(cert):
     ca = ''
     if 'issuer' in cert:
@@ -106,10 +136,19 @@ def get_ca(cert):
         issued_by = issuer['commonName']
         return {'cert_ca': issued_by}
 
+
+"""
+Receives an already crafted certificate.
+Looks for the "not before" and "not after" fields
+"""
 def get_validity(cert):
     validity = '%s -- %s' % (cert['notBefore'],cert['notAfter'])
     return {'cert_validity':validity}
 
+
+"""
+This function receives a socket. It can look for the cipher
+"""
 def get_algorithm(ssl_socket):
     cipher = ssl_socket.cipher()
     cipher_name = cipher[0]
@@ -119,6 +158,11 @@ def get_algorithm(ssl_socket):
     return {'cert_algorithm':result}
 
 
+"""
+Gets a certificate in binary format.
+It gets as public key of the certificate converting from binary 
+to an "hex" string
+"""
 def get_key(raw_cert):
     try:
         m2cert = X509.load_cert_string(raw_cert, X509.FORMAT_DER)
@@ -129,33 +173,77 @@ def get_key(raw_cert):
             pub_array[i] = ' '.join(pub_array[i][j:j+2] for j in range(0,len(pub_array[i]),2))        
         return {'ca_key':pub_array}
     except Exception as e:
-        return {'error3':e}
+        return {'ca_key':'Could not get the public key. Maybe the certificate uses ECC and not RSA.'}
 
 
+"""
+This function calls all the other functions that get info from the certificate.
+It updates the resulting dictionary with each function
+"""
 def check_certificate(ip, port=443):
     result = {}
     try:
-         ctx = create_default_context()
-	 ctx.check_hostname = False
-	 ssl_socket = ctx.wrap_socket(socket(), server_hostname=ip)
-	 ssl_socket.connect((ip, port))
-	 cert = ssl_socket.getpeercert()
-	 raw_cert = ssl_socket.getpeercert(1)
-	 result = {}
-	 result.update(get_domain(cert))
-	 result.update(get_ca(cert))
-	 result.update(get_validity(cert))
-	 result.update(get_algorithm(ssl_socket))
-	 result.update(get_key(raw_cert))
-	 result.update({'ssl_suites':cert})
-         return result
+        ctx = create_default_context()
+	ctx.check_hostname = False
+	ssl_socket = ctx.wrap_socket(socket(), server_hostname=ip)
+	ssl_socket.connect((ip, port))
+	cert = ssl_socket.getpeercert()
+	raw_cert = ssl_socket.getpeercert(1)
+	result.update(get_domain(cert))
+	result.update(get_ca(cert))
+	result.update(get_validity(cert))
+	result.update(get_algorithm(ssl_socket))
+	result.update(get_key(raw_cert))
+	result.update({'ssl_suites':cert})
+        ssl_socket.close()
+        return result
         
     except Exception as e:
         result.update({'error3':e})
         return result
 
 
+"""
+Uses crafted Http Adapters to start new sessions forcing to use
+each SSL protocols. If an exception is raised, the server does not support
+the format
+"""
+def check_ssl_protocols(ip, port=443):
+    result = {'ssl_protocols':[]}
+    url = 'https://%s:%s' % (ip,port)
+    protocols = []
+    try:
+        try:
+            s1 = Session()
+            s1.mount(url, Tls1HttpAdapter())
+            s1.get(url, verify=False)
+            protocols.append('TLS v. 1 : YES')
+        except:
+            protocols.append('TLS v. 1 : NO')
+        try:
+            s2 = Session()
+            s2.mount(url, Tls1_1HttpAdapter())
+            s2.get(url, verify=False)
+            protocols.append('TLS v. 1.1 : YES')
+        except:
+            protocols.append('TLS v. 1.1 : NO')
+        try:
+            s3 = Session()
+            s3.mount(url, Tls1_2HttpAdapter())
+            s3.get(url, verify=False)
+            protocols.append('TLS v. 1.2 : YES')
+        except:
+            protocols.append('TLS v. 1.2 : NO')
+            
+        result = {'ssl_protocols':protocols}
+        return result
+    except Exception as e:
+        result.update({'error3':e})
+        return result
 
+"""
+Calls the other functions tog get info from the server
+"""
 def passive_analysis(ip, port, protocol):
     try:
         if ip == '' or port == '':
@@ -174,8 +262,10 @@ def passive_analysis(ip, port, protocol):
         result_dict.update(check_install(url))
         if protocol == 'HTTPS':
             result_dict.update(check_certificate(ip, int(port)))
+            result_dict.update(check_ssl_protocols(ip, int(port)))
         else:
             result_dict.update(check_certificate(ip))
+            result_dict.update(check_ssl_protocols(ip))
 
 
         return result_dict

@@ -128,6 +128,14 @@
 				        		<td>PHP version</td>
 							<td>{{ php_version  }}</td>
 				      		</tr>
+			      			<tr>
+							<td>CMS</td>
+							<td>{{ cms  }}</td>
+				      		</tr>
+				      		<tr>
+				        		<td>CMS version</td>
+							<td>{{ cms_version  }}</td>
+				      		</tr>
 				      		<tr>
 				        		<td>X-XSS-Protection</td>
 							<td>{{ x_xss_protection  }}</td>
@@ -151,10 +159,6 @@
 				      		<tr>
 				        		<td>Set-Cookie: HTTP Only</td>
 							<td>{{ setcookie_httponly  }}</td>
-				      		</tr>
-				      		<tr>
-				        		<td>Test</td>
-							<td>{{ test  }}</td>
 				      		</tr>
 				    	</tbody>
 				</table>	
@@ -195,17 +199,16 @@
 				      		<tr>
 				        		<td>Key</td>
 							<td>{% for line in ca_key  %}
-								<br>{{ line }}
+								{{ line }}<br>
 							    {% endfor %}
 							</td>
 				      		</tr>
 				      		<tr>
 				        		<td>Supported SSL/TLS protocols </td>
-							<td>{{ ssl_protocols  }}</td>
-				      		</tr>
-				      		<tr>
-				        		<td>Supported encryption suited</td>
-							<td>{{ ssl_suites  }}</td>
+							<td>{% for p in ssl_protocols  %}
+								{{ p }}<br>
+							    {% endfor %}
+							</td>
 				      		</tr>
 				    	</tbody>
 				</table>	
