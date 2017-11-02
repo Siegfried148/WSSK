@@ -9,6 +9,7 @@ from .forms import *
 from .crypto_lib import *
 from .network_lib import *
 from .passive_lib import *
+from .active_lib import *
 
 
 """
@@ -97,18 +98,23 @@ def passive(request):
 
 
 def active(request):
-    ip_address = "Valid IP address or domain name"
-    port = "80"
-    message = ""
-    result_dict = {}
+    result_dict = {'prot_opt1':'HTTP','prot_opt2':'HTTPS', 'active_port':'80'}
     if request.method == "POST":
-        #The button from the public ip address section
-        if 'pub_ip_btn' in request.POST:
-            message = PublicIPForm(request.POST)
+        if 'active_btn' in request.POST:
+            message = ActiveForm(request.POST)
             if message.is_valid():
-                result_dict = get_ip(request)
-
-    return render(request, 'tools/active.html', {'ip_address':ip_address, 'port':port})
+                ip = message.cleaned_data['active_ip']
+                port = message.cleaned_data['active_port']
+                protocol = message.cleaned_data['protocol']
+                if protocol == 'HTTP':
+                    prot_opt1 = 'HTTP'
+                    prot_opt2 = 'HTTPS'
+                else:
+                    prot_opt1 = 'HTTPS'
+                    prot_opt2 = 'HTTP'
+                result_dict.update({'prot_opt1':prot_opt1,'prot_opt2':prot_opt2, 'active_port':port, 'active_ip':ip})
+                result_dict.update(active_analysis(ip, port, protocol))
+    return render(request, 'tools/active.html', result_dict)
 
 
 def scanner(request):

@@ -30,13 +30,16 @@ it supposes that it has the file
 """
 def check_index(url):
     try:
+        code =[]
         indexes = ['index.html','index.htm','index.php','index.asp', 'index.phtml', 'index.cgi', 'index.xhtml']
         index_result = ''
         for index in indexes:
             response = get('%s/%s' % (url,index), verify=False, timeout=6)
             if response.status_code == 200:
                 index_result += '%s, ' % index
+#                code.append(response.__dict__)
         return {'index_files':index_result[:-2]}
+#        return {'index_files':code}
     except Exception as e:
         return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
@@ -86,7 +89,7 @@ def check_headers(url):
 	    x_frame_options = headers['X-Frame-Options'] if 'X-Frame-Options' in headers else 'Header is not set'
 	    x_content_type_options = headers['X-Content-Type-Options'] if 'X-Content-Type-Options' in headers else 'Header is not set'
 	    hsts = headers['Strict-Transport-Security'] if 'Strict-Transport-Security' in headers else 'Header is not set'
-	    cms = headers['X-Generated-By'] if 'x-Generated-By' in headers else 'Header is not set'
+	    cms = headers['X-Generator'] if 'x-Generator' in headers else 'Header is not set'
 	    cms_version = headers['X-Cms-Version'] if 'X-Cms-Version' in headers else 'Header is not set'
 	    #Set-Cookie options
 	    if 'Set-Cookie' in headers:

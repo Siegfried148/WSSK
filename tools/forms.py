@@ -49,3 +49,9 @@ class PassiveForm(forms.Form):
     passive_ip = forms.CharField(max_length = 150, required=False)
     passive_port = forms.CharField(max_length = 5, required=False)
     protocol = forms.ChoiceField(choices = options, required=False)
+
+class ActiveForm(forms.Form):
+    options = (('HTTP','HTTP'),('HTTPS','HTTPS'))
+    active_ip = forms.CharField(max_length = 150, required=False)
+    active_port = forms.CharField(max_length = 5, required=False)
+    protocol = forms.ChoiceField(choices = options, required=False)
