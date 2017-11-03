@@ -16,19 +16,16 @@ def get_url(ip,port,protocol):
     return url
 
 def add_to_structure(base, resource):
-#    print "*"*100
-#    print "/".join(resource)
-#    print base
     try:
-        r = Resolver('r1')
+        r = Resolver("name")
         try:
-            r.get(base, resource[0])
+            existing_node = r.get(base, resource[0])
+            if len(resource) > 1:
+                add_to_structure(existing_node,resource[1:])
         except Exception as e:
             new_node = Node(resource[0],parent=base)
             if len(resource) > 1:
-                return add_to_structure(new_node,resource[1:])
-            else:
-                return base
+                add_to_structure(new_node,resource[1:])
     except Exception as e:
         print e
 
@@ -47,8 +44,8 @@ with open('http_response.html','r') as i:
                 l_char_index = line[f_char_index:].index('"') + f_char_index  
                 url = line[f_char_index:l_char_index]
                 resource = url.split('//')[1].split('/')[1:]
-                r_node = add_to_structure(base_node,resource)
+                add_to_structure(base_node,resource)
 
 
-print RenderTree(r_node)
+print RenderTree(base_node)
 
