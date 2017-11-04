@@ -64,15 +64,15 @@ def update_tree_src(tree, text):
 	    for index in indexes1:
 	        f_char_index = index + 5    
 	        l_char_index = line[f_char_index:].index('"') + f_char_index  
-	        url = line[f_char_index:l_char_index]
+	        url = line[f_char_index:l_char_index].strip()
                 if not url.startswith('http') and not url.startswith('//'):
         	        resource = url.split('/')
         	        add_to_structure(tree,resource)
         if indexes2 != []:
-	    for index in indexes1:
+	    for index in indexes2:
 	        f_char_index = index + 6    
 	        l_char_index = line[f_char_index:].index('"') + f_char_index  
-	        url = line[f_char_index:l_char_index]
+	        url = line[f_char_index:l_char_index].strip()
                 if not url.startswith('http') and not url.startswith('//'):
         	        resource = url.split('/')
         	        add_to_structure(tree,resource)

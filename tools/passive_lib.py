@@ -34,12 +34,19 @@ def check_index(url):
         indexes = ['index.html','index.htm','index.php','index.asp', 'index.phtml', 'index.cgi', 'index.xhtml']
         index_result = ''
         for index in indexes:
+            has_index = True
             response = get('%s/%s' % (url,index), verify=False, timeout=6)
             if response.status_code == 200:
+                for hist_response in response.history:
+                    if hist_response.status_code == 302:
+                        has_index = False
+            else:
+                 has_index = False
+            if has_index:
                 index_result += '%s, ' % index
-#                code.append(response.__dict__)
+        if index_result == '':
+            index_result = 'Could not find an index file  '
         return {'index_files':index_result[:-2]}
-#        return {'index_files':code}
     except Exception as e:
         return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
@@ -50,8 +57,15 @@ it supposes that the file exists
 """
 def check_robots(url):
     try:
+        has_robots = True
         response = get('%s/%s' % (url,'robots.txt'), verify=False, timeout=6)
-        robots_file = 'Has a robots.txt file' if response.status_code == 200 else 'Does not have a robots.txt'
+        if response.status_code == 200:
+            for hist_response in response.history:
+                if hist_response.status_code == 302:
+                    has_robots = False
+        else:
+            has_robots = False 
+        robots_file = ('File: %s/robots.txt' % url) if has_robots else 'Does not have a robots.txt'
         return {'robots_file':robots_file}
     except Exception as e:
         return {'error1':  'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
@@ -63,11 +77,18 @@ the directory exists.
 """
 def check_install(url):
     try:
+        has_install = True
         directories = ['setup','install']
         dirs_result = ''
         for d in directories:
             response = get('%s/%s' % (url,d), verify=False, timeout=6)
             if response.status_code in [200,403]:
+                for hist_response in response.history:
+                    if hist_response.status_code == 302:
+                        has_install = False
+            else:
+                has_install = False 
+            if has_install:
                 dirs_result += '%s, ' % d
         result_dir = {'install_dir':dirs_result[:-2]} if dirs_result != '' else {'install_dir':'No installation directories'}
         return result_dir
