@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #Castro Rendón Virgilio
 from requests import get, options, Session
-from ssl import create_default_context, PROTOCOL_SSLv23, PROTOCOL_TLSv1, PROTOCOL_TLSv1_1, PROTOCOL_TLSv1_2 
+from ssl import create_default_context, PROTOCOL_SSLv23, PROTOCOL_TLSv1, PROTOCOL_TLSv1_1, PROTOCOL_TLSv1_2, _create_unverified_context
 from socket import socket
 from M2Crypto import X509
 from binascii import hexlify
@@ -208,6 +208,7 @@ def check_certificate(ip, port=443):
     result = {}
     try:
         ctx = create_default_context()
+#        ctx = _create_unverified_context()
 	ctx.check_hostname = False
 	ssl_socket = ctx.wrap_socket(socket(), server_hostname=ip)
 	ssl_socket.connect((ip, port))
@@ -223,7 +224,7 @@ def check_certificate(ip, port=443):
         return result
         
     except Exception as e:
-        result.update({'error3':e})
+        result.update({'error3':'holi'})
         return result
 
 
