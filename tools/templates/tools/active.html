@@ -67,12 +67,15 @@
 			<div class="col-md-10 col-lg-10 col-lg-offset-1 col-md-offset-1 explain">
 				{% if result %}
 				<div class="row" id="results">
-					<div class="col-md-7 col-lg-7 ">
+					<div class="col-md-12 col-lg-12 ">
 						<h3>Active analysis results</h3>
 						<br>
-						<div class ="row">
-							<div class="col-md-10 col-lg-10">
-								{{ resources }}
+						<div class="row">
+							<div class="col-md-12 col-lg-12">
+								<div class="form-group">
+									<label for="comment">Directory and Files Structure</label>
+									<textarea class="form-control" rows="25" id="web_structure" name="web_structure">{{ web_structure }}</textarea>
+								</div>
 							</div>
 						</div>
 					</div>
