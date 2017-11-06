@@ -10,6 +10,7 @@ from .crypto_lib import *
 from .network_lib import *
 from .passive_lib import *
 from .active_lib import *
+from .scanner_lib import *
 
 
 """
@@ -118,7 +119,19 @@ def active(request):
 
 
 def scanner(request):
-    return render(request, 'tools/scanner.html', {})
+    result_dict = {'scanner_port':'443'}
+    if request.method == "POST":
+        if any(btn in request.POST for btn in ['heartbleed_btn','shellshock_btn','poodle_btn','drown_btn']):
+            message = ScannerForm(request.POST)
+            if message.is_valid():
+                ip = message.cleaned_data['scanner_ip']
+                port = message.cleaned_data['scanner_port']
+                result_dict.update({'scanner_port':port, 'scanner_ip':ip})
+                if 'heartbleed_btn' in request.POST:  result_dict.update(check_heartbleed(ip, port))
+                elif 'shellshock_btn' in request.POST:  result_dict.update(check_shellshock(ip, port))
+                elif 'poodle_btn' in request.POST:  result_dict.update(check_poodle(ip, port))
+                elif 'drown_btn' in request.POST:  result_dict.update(check_drown(ip, port))
+    return render(request, 'tools/scanner.html', result_dict)
 
 
 def network(request):

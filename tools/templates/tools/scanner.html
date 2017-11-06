@@ -1,4 +1,144 @@
 {% extends 'tools/base.html' %}
 {% block content %}
-	<h1>SCANNER</h1>
+	<br><br>
+		<div class="row" id="scanner">
+			<div class="col-md-7 col-lg-7 ">
+				<h3>Vulnerability Scanner</h3>
+				<br>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-8 col-lg-8" id="explain">
+				<form name = "form" action = "{% url "scanner" %}#results" method = "POST" >{% csrf_token %} 
+					<div class="row">
+						<div class="col-md-7 col-md-offset-1 col-lg-7 col-lg-offset-1">
+							<label for="comment">IP address or domain name:</label>
+							{% if scanner_ip %}
+							<input type="text" class="form-control" value="{{ scanner_ip }}" name="scanner_ip">
+							{% else %}
+							<input type="text" class="form-control" value="" name="scanner_ip">
+							{% endif %}
+						</div>
+						<div class="col-md-4 col-lg-4">
+							<label for="comment">Port:</label>
+							{% if scanner_port %}
+							<input type="text" class="form-control" value="{{ scanner_port }}" name="scanner_port">
+							{% else %}
+							<input type="text" class="form-control" value="" name="scanner_port">
+							{% endif %}
+						</div>
+					</div>
+				        <br>
+					<br>
+					<div class="row">
+						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="heartbleed_btn" >
+								<strong>Heartbleed</strong>
+							</button>
+						</div>
+						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="shellshock_btn" >
+								<strong>Shellshock</strong>
+							</button>
+						</div>
+						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="poodle_btn" >
+								<strong>Poodle</strong>
+							</button>
+						</div>
+						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="drown_btn" >
+								<strong>Drown</strong>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-4 col-lg-4 explain">
+				This tool will analyze a web server looking for some well known vulnerabilities. These are:
+				<br><br>
+				<ul class="list-group">
+					<li class="list-group-item">Heartbleed</li>
+			    		<li class="list-group-item">Bash Shellshock</li> 
+		    			<li class="list-group-item">Poodle</li> 
+		    			<li class="list-group-item">Drown</li> 
+				</ul>	    
+			</div>
+		</div>
+		<div class="row section-limit">
+			<div class="col-md-10 col-lg-10 col-lg-offset-1 col-md-offset-1 explain" id="results">
+				{% if heartbleed_result %}
+					<h3>Heartbleed Analysis</h3>
+					<br>
+					{% if heartbleed_error %}
+						<input type="text" id="heartbleed-error" class="form-control" value="{{ heartbleed_error }}">
+					{% endif %}
+					<br>
+					<div class="row">
+						<div class="col-md-12 col-lg-12">
+							<ul class="list-group">
+								{% for d in admin_dirs %}
+								<li class="list-group-item">{{ d }}</li>
+								{% endfor %}
+							</ul>	    
+						</div>
+					</div>
+				{% endif %}
+				{% if shellshock_result %}
+					<h3>Shellshock Analysis</h3>
+					<br>
+					{% if shellshock_error %}
+						<input type="text" id="shellshock-error" class="form-control" value="{{ shellshock_error }}">
+					{% endif %}
+					<br>
+					<div class="row">
+						<div class="col-md-12 col-lg-12">
+							<ul class="list-group">
+								{% for d in admin_dirs %}
+								<li class="list-group-item">{{ d }}</li>
+								{% endfor %}
+							</ul>	    
+						</div>
+					</div>
+				{% endif %}
+				{% if drown_result %}
+					<h3>Drown Analysis</h3>
+					<br>
+					{% if drown_error %}
+						<input type="text" id="drown-error" class="form-control" value="{{ drown_error }}">
+					{% endif %}
+					<br>
+					<div class="row">
+						<div class="col-md-12 col-lg-12">
+							<ul class="list-group">
+								{% for d in admin_dirs %}
+								<li class="list-group-item">{{ d }}</li>
+								{% endfor %}
+							</ul>	    
+						</div>
+					</div>
+				{% endif %}
+				{% if poodle_result %}
+					<h3>Poodle Analysis</h3>
+					<br>
+					{% if poodle_error %}
+						<input type="text" id="poodle-error" class="form-control" value="{{ poodle_error }}">
+					{% endif %}
+					<br>
+					<div class="row">
+						<div class="col-md-12 col-lg-12">
+							<ul class="list-group">
+								{% for d in admin_dirs %}
+								<li class="list-group-item">{{ d }}</li>
+								{% endfor %}
+							</ul>	    
+						</div>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+
+
+	
 {% endblock %}
+
