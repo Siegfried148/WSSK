@@ -69,68 +69,98 @@
 			<div class="col-md-10 col-lg-10 col-lg-offset-1 col-md-offset-1 explain" id="results">
 				{% if heartbleed_result %}
 					<h3>Heartbleed Analysis</h3>
-					<br>
 					{% if heartbleed_error %}
 						<input type="text" id="heartbleed-error" class="form-control" value="{{ heartbleed_error }}">
 					{% endif %}
-					<br>
 					<div class="row">
 						<div class="col-md-12 col-lg-12">
 							<ul class="list-group">
-								{% for d in admin_dirs %}
-								<li class="list-group-item">{{ d }}</li>
-								{% endfor %}
+								<h4>CVE-2014-0160</h4>
+								<br>
+								The Heartbleed Bug is a serious vulnerability in the popular OpenSSL 
+								cryptographic software library. It allows for stealing information 
+								intended to be protected by SSL/TLS encryption.
+								<br><br>
+								OpenSSL versions 1.0.1 and 1.0.2-beta releases (including 1.0.1f and 
+								1.0.2-beta1) of OpenSSL are affected by the Heartbleed bug. The bug 
+								allows for reading memory of systems protected by the vulnerable OpenSSL 
+								versions and could allow for disclosure of otherwise encrypted confidential 
+								information as well as the encryption keys themselves.
+								<br><br>
+								<input type="text" class="form-control" value="{{ heartbleed_result }}">
 							</ul>	    
 						</div>
 					</div>
 				{% endif %}
 				{% if shellshock_result %}
 					<h3>Shellshock Analysis</h3>
-					<br>
 					{% if shellshock_error %}
 						<input type="text" id="shellshock-error" class="form-control" value="{{ shellshock_error }}">
 					{% endif %}
-					<br>
 					<div class="row">
 						<div class="col-md-12 col-lg-12">
 							<ul class="list-group">
-								{% for d in admin_dirs %}
-								<li class="list-group-item">{{ d }}</li>
-								{% endfor %}
+								<h4>CVE-2014-6271</h4>
+								<br>
+								Shellshock, also known as Bashdoor, is a family of security bugs in the 
+								widely used Unix Bash shell, the first of which was disclosed on 24 September 
+								2014. Many Internet-facing services, such as some web server deployments, 
+								use Bash to process certain requests, allowing an attacker to cause vulnerable 
+								versions of Bash to execute arbitrary commands. This can allow an attacker to 
+								gain unauthorized access to a computer system.
+								<br><br>
+								Shellshock could potentially compromise millions of unpatched servers and 
+								other systems. Accordingly, it has been compared to the Heartbleed bug in its 
+								severity
+								<br><br>
+								<input type="text" class="form-control" value="{{ shellshock_result }}">
 							</ul>	    
 						</div>
 					</div>
 				{% endif %}
 				{% if drown_result %}
 					<h3>Drown Analysis</h3>
-					<br>
 					{% if drown_error %}
 						<input type="text" id="drown-error" class="form-control" value="{{ drown_error }}">
 					{% endif %}
-					<br>
 					<div class="row">
 						<div class="col-md-12 col-lg-12">
 							<ul class="list-group">
-								{% for d in admin_dirs %}
-								<li class="list-group-item">{{ d }}</li>
-								{% endfor %}
+								<h4>CVE-2016-0800</h4>
+								<br>
+								The SSLv2 protocol, as used in OpenSSL before 1.0.1s and 1.0.2 before 
+								1.0.2g and other products, requires a server to send a ServerVerify message 
+								before establishing that a client possesses certain plaintext RSA data, 
+								which makes it easier for remote attackers to decrypt TLS ciphertext data 
+								by leveraging a Bleichenbacher RSA padding oracle, aka a "DROWN" attack.
+								<br><br>
+								<input type="text" class="form-control" value="{{ drown_result }}">
 							</ul>	    
 						</div>
 					</div>
 				{% endif %}
 				{% if poodle_result %}
 					<h3>Poodle Analysis</h3>
-					<br>
 					{% if poodle_error %}
 						<input type="text" id="poodle-error" class="form-control" value="{{ poodle_error }}">
 					{% endif %}
-					<br>
 					<div class="row">
 						<div class="col-md-12 col-lg-12">
 							<ul class="list-group">
-								{% for d in admin_dirs %}
-								<li class="list-group-item">{{ d }}</li>
-								{% endfor %}
+								<h4>CVE-2014-3566</h4>
+								<br>
+								The SSL protocol 3.0, as used in OpenSSL through 1.0.1i and
+								other products, uses nondeterministic CBC padding, which makes it easier
+								for man-in-the-middle attackers to obtain cleartext data via a
+								padding-oracle attack, aka the "POODLE" issue.
+								<br><br>
+								The POODLE attack (which stands for "Padding Oracle On Downgraded Legacy 
+								Encryption") is a man-in-the-middle exploit which takes advantage of 
+								Internet and security software clients' fallback to SSL 3.0.
+							       	If attackers successfully exploit this vulnerability, on average, they only 
+								need to make 256 SSL 3.0 requests to reveal one byte of encrypted messages.
+								<br><br>
+								<input type="text" class="form-control" value="{{ poodle_result }}">
 							</ul>	    
 						</div>
 					</div>

@@ -9,7 +9,7 @@ def check_heartbleed(site,port):
         process = Popen(['nmap', '-p', port, '--script','ssl-heartbleed',site], stdout=PIPE, stderr=STDOUT)
         code = process.wait()
         output = process.stdout.read()
-        if "Vulnerable" not in output:
+        if "VULNERABLE" not in output:
             return {'heartbleed_result':'%s is not vulnerable' % site}  
         return {'heartbleed_result':'%s is vulnerable' % site}
     except ValueError as e:
@@ -23,7 +23,7 @@ def check_shellshock(site,port):
         process = Popen(['nmap', '-sV', '-p', port, '--script','http-shellshock',site], stdout=PIPE, stderr=STDOUT)
         code = process.wait()
         output = process.stdout.read()
-        if "Vulnerable" not in output:
+        if "VULNERABLE" not in output:
             return {'shellshock_result':'%s is not vulnerable' % site}  
         return {'shellshock_result':'%s is vulnerable' % site}
     except ValueError as e:
@@ -37,7 +37,7 @@ def check_poodle(site,port):
         process = Popen(['nmap', '-sV', '--version-light','-p', port, '--script','ssl-poodle',site], stdout=PIPE, stderr=STDOUT)
         code = process.wait()
         output = process.stdout.read()
-        if "Vulnerable" not in output:
+        if "VULNERABLE" not in output:
             return {'poodle_result':'%s is not vulnerable' % site}  
         return {'poodle_result':'%s is vulnerable' % site}
     except ValueError as e:
@@ -51,7 +51,7 @@ def check_drown(site,port):
         process = Popen(['nmap','-sV', '-p', port, '--script','sslv2-drown',site], stdout=PIPE, stderr=STDOUT)
         code = process.wait()
         output = process.stdout.read()
-        if "Vulnerable" not in output:
+        if "VULNERABLE" not in output:
             return {'drown_result':'%s is not vulnerable' % site}  
         return {'drown_result':'%s is vulnerable' % site}
     except ValueError as e:
