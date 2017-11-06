@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #Castro Rendón Virgilio
 from requests import get
-from anytree import Node, RenderTree, Resolver, DoubleStyle, ContRoundStyle
+from anytree import Node, RenderTree, Resolver, DoubleStyle, PreOrderIter
 
 def get_url(ip,port,protocol):
     if protocol == "HTTP":
@@ -92,6 +92,100 @@ def map_server(site, url):
     except Exception as e:
         return {'error1': e}
 
+def get_node_path(node):
+    try:
+        path = '/'
+        for n in node.path[1:]:
+            path += ('%s/' % n.name)
+        return path
+    except Exception as e:
+        pass
+
+
+def get_directories(url, tree):
+    try:
+        a = []
+        directory_nodes = [node for node in PreOrderIter(tree, filter_=lambda n: not n.is_leaf or n.is_root)]
+        for n in directory_nodes:
+            dir_url = '%s%s' % (url,get_node_path(n))
+            a.append(dir_url)
+        return a
+    except Exception as e:
+        pass 
+
+
+def get_backup_files(urls):
+    try:
+        files = ['backup.sql','backup.db','dump.sql','dump.db','backup.old']
+        backups_result = []
+        for f in files:
+            for u in urls:
+	        response = get('%s%s' % (u,f), verify=False, timeout=6, allow_redirects=False)
+	        if response.status_code in [200]:
+                    backups_result.append('%s%s' % (u,f))
+        result_back = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
+        return result_back
+    except Exception as e:
+        return {'error2':[e]}
+
+def get_sensitive_files(urls):
+    try:
+        files = ['.htaccess','info.php']
+        result = []
+        for f in files:
+            for u in urls:
+	        response = get('%s%s' % (u,f), verify=False, timeout=6, allow_redirects=False)
+	        if response.status_code in [200]:
+                    result.append('%s%s' % (u,f))
+        result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':['No sensitive files found']}
+        return result_dict
+    except Exception as e:
+        return {'error3':[e]}
+
+
+def get_directory_indexing(urls):
+    try:
+        result = []
+        for u in urls:
+            response = get(u, verify=False, timeout=6, allow_redirects=False)
+            if not (response.status_code in [200] and ('Index of' in response.text or 'Directory listing for' in response.text)):
+                continue
+            else:
+                result.append(u)
+        result_dict = {'indexing':result} if result != [] else {'indexing':['No directory with indexing was found']}
+        return result_dict
+    except Exception as e:
+        return {'error4':[e]}
+
+def get_installation_dirs(urls):
+    try:
+        dirs = ['setup','install']
+        result = []
+        for d in dirs:
+            for u in urls:
+	        response = get('%s%s' % (u,d), verify=False, timeout=6, allow_redirects=False)
+	        if response.status_code in [200,301]:
+                    result.append('%s%s' % (u,d))
+        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No installation directories found']}
+        return result_dict
+    except Exception as e:
+        return {'error5':[e]}
+
+def get_admin_dirs(urls):
+    try:
+        dirs = ['admin','user','wp-admin']
+        result = []
+        for d in dirs:
+            for u in urls:
+	        response = get('%s%s' % (u,d), verify=False, timeout=6, allow_redirects=False)
+	        if response.status_code in [200,301]:
+                    result.append('%s%s' % (u,d))
+        result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':['No administration directories found']}
+        return result_dict
+    except Exception as e:
+        return {'error6':[e]}
+
+
 
 """
 Calls the other functions tog get info from the server
@@ -101,11 +195,17 @@ def active_analysis(site, port, protocol):
         if site == '' or port == '':
             return {'active_ip':'Specify an IP address or domain name and a port.', 'active_port':port}
         result_dict = {'result':True}
-	url = get_url(site,str(port),protocol)
+        url = get_url(site,str(port),protocol)
         web_structure, tree = map_server(site,url)
+        dirs = get_directories(url, tree)
         result_dict.update(web_structure)
-
+#        result_dict.update(get_backup_files(dirs))
+#        result_dict.update(get_sensitive_files(dirs))
+#        result_dict.update(get_directory_indexing(dirs))
+#        result_dict.update(get_installation_dirs(dirs))
+        result_dict.update(get_admin_dirs(dirs))
+#        result_dict.update(get_cms(url))
         return result_dict
     except ValueError as e:
-        result_dict.update({'error1':e, 'result':True})
+        result_dict.update({'error1':'Maybe the server is not up', 'result':True})
         return result_dict
