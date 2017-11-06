@@ -2,6 +2,9 @@
 #Castro Rendón Virgilio
 from subprocess import check_output, Popen, PIPE, STDOUT
 
+"""
+Executes a subprocess with the command "nmap" in order to determine if is vulnerable to heartbleed
+"""
 def check_heartbleed(site,port):
     try:
         if site == '' or port == '':
@@ -16,6 +19,10 @@ def check_heartbleed(site,port):
         result_dict.update({'heartbleed_error':e})
         return result_dict
 
+
+"""
+Executes a subprocess with the command "nmap" in order to determine if is vulnerable to shellshock
+"""
 def check_shellshock(site,port):
     try:
         if site == '' or port == '':
@@ -30,6 +37,10 @@ def check_shellshock(site,port):
         result_dict.update({'shellshock_error':e})
         return result_dict
 
+
+"""
+Executes a subprocess with the command "nmap" in order to determine if is vulnerable to poodle
+"""
 def check_poodle(site,port):
     try:
         if site == '' or port == '':
@@ -44,6 +55,10 @@ def check_poodle(site,port):
         result_dict.update({'poodle_error':e})
         return result_dict
 
+
+"""
+Executes a subprocess with the command "nmap" in order to determine if is vulnerable to drown
+"""
 def check_drown(site,port):
     try:
         if site == '' or port == '':

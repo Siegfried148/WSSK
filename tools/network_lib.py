@@ -3,8 +3,9 @@
 from subprocess import check_output, Popen, PIPE, STDOUT
 from socket import gethostbyname, gethostbyaddr
 
+
 """
-Uses HTTP requests to determine the original IP address
+Uses HTTP requests to determine the original IP address.
 """
 def get_ip(request):
     try:
@@ -18,6 +19,9 @@ def get_ip(request):
         return {'pub_ip':'An error occurred.'}
 
 
+"""
+Execcutes a subprocces with the command "ping" in order to map into the page, the output.
+"""
 def ping(ip):
     try:
         if ip == '':
@@ -33,7 +37,10 @@ def ping(ip):
     except Exception as e:
         return {'ping_ip':ip, 'ping_out':'An error ocurred.'}
 
-        
+   
+"""
+Execcutes a subprocces with the command "whois" in order to map into the page, the output.
+"""
 def whois(site):
     try:
         if site == '':
@@ -50,6 +57,9 @@ def whois(site):
         return {'whois_ip':site, 'whois_out':'An error ocurred.'}
 
 
+"""
+Execcutes a subprocces with the command "traceroute" in order to map into the page, the output.
+"""
 def traceroute(site):
     try:
         if site == '':
@@ -65,6 +75,10 @@ def traceroute(site):
     except Exception as e:
         return {'traceroute_ip':site, 'traceroute_out':'An error ocurred.'}
 
+
+"""
+Uses the function "gethostbyname" to automatically determine the IP address of the host
+"""
 def lookup(name):
     try:
         ip = gethostbyname(name)
@@ -72,6 +86,10 @@ def lookup(name):
     except:
         return {'lookup_name':name,'lookup_ip':'An error ocurred.'}
 
+
+"""
+Returns the names registered for an IP address.
+"""
 def reverse(ip):
     try:
         name = gethostbyaddr(ip)[0]

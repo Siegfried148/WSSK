@@ -1,49 +1,60 @@
-{% load staticfiles  %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-	<meta charset="UTF-8">
-	<title>WSSK</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-theme.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
-</head>
-<body class="container-fluid body" id="body">
-	<header class="header">
-		<nav class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="{% url 'tool_list'  %}" style="padding-left:40px;">WSSK</a>
-				</div>
-				<ul class="nav navbar-nav">
-					<li><a href="active.html">Active analysis</a></li>
-					<li><a href="passive.html">Passive analysis</a></li>
-					<li><a href="crypto.html">Crypto tools</a></li>
-					<li><a href="network.html">Network tools</a></li>
-					<li><a href="scanner.html">Vulnerability scanner</a></li>
-				</ul>
+{% extends 'tools/base.html' %}
+{% block content %}
+	<section class="segunda-seccion">
+		<a href = active.html >
+			<div class="izq img-responsive">
+				<img src="/static/img/active.png">
 			</div>
-		</nav>
-		<br>
-		<span class="titulo">UNAM-CERT</span> <!--Etiqueta que trabaja en forma de línea.-->
-		<h1>Web Security Swiss Knife</h1>
-	</header>
-	{% for tool in tools %}
-		<section class="segunda-seccion">
-			<a href = {{ tool.keyword }}.html >
-				<div class="izq img-responsive">
-					<img src="/static/img/{{ tool.keyword }}.png">
-				</div>
-				<div class="der">
-					<h3>{{ tool.title }}</h3>
-					<p>{{ tool.text }} </p>
-				</div>
-			</a>
-		</section>
-	{% endfor %}
-	<footer class="footer">
-		<p>All rights reserved</p>
-		<a href="">Ir arriba</a>
-	</footer>
-</body>
-</html>
+			<div class="der">
+				<h3>Server active analysis</h3>
+				<p>This module can return a simple map of the web server structure and use it to
+				look for different kind of files and directories.</p>
+			</div>
+		</a>
+	</section>
+	<section class="segunda-seccion">
+		<a href = passive.html >
+			<div class="izq img-responsive">
+				<img src="/static/img/passive.png">
+			</div>
+			<div class="der">
+				<h3>Server passive analysis</h3>
+				<p>This module can analyze a web server looking for HTTPS information and HTTP headers.</p>
+			</div>
+		</a>
+	</section>
+	<section class="segunda-seccion">
+		<a href = crypto.html >
+			<div class="izq img-responsive">
+				<img src="/static/img/crypto.png">
+			</div>
+			<div class="der">
+				<h3>Cryptography tools</h3>
+				<p>This module has a series of simple but useful tools such as an encoder and a hash calculator.</p>
+			</div>
+		</a>
+	</section>
+	<section class="segunda-seccion">
+		<a href = network.html >
+			<div class="izq img-responsive">
+				<img src="/static/img/network.png">
+			</div>
+			<div class="der">
+				<h3>Network tools</h3>
+				<p>This module has some useful tools to test network settings such as an ICMP (ping) tool and DNS lookup.</p>
+			</div>
+		</a>
+	</section>
+	<section class="segunda-seccion">
+		<a href = scanner.html >
+			<div class="izq img-responsive">
+				<img src="/static/img/scanner.png">
+			</div>
+			<div class="der">
+				<h3>Vulnerability scanner</h3>
+				<p>This module can analyze a server looking for some well known vulnerabilities such as Heartbleed or Shellshock.</p>
+			</div>
+		</a>
+	</section>
+{% endblock %}
+

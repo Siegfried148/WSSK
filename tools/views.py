@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 #Castro Rendón Virgilio
-
 from __future__ import unicode_literals
 from django.shortcuts import render
 from .models import Tool
@@ -17,8 +16,7 @@ from .scanner_lib import *
 Renders the main page.
 """
 def tool_list(request):
-    tools = Tool.objects.all().order_by('title')
-    return render(request, 'tools/tool_list.html', {'tools':tools})
+    return render(request, 'tools/tool_list.html')
 
 
 """
@@ -77,6 +75,10 @@ def crypto(request):
     return render(request, 'tools/crypto.html', result_dict)
 
 
+"""
+Receives a POST request. Handles the information depending on the user configuration.
+After creating an initial dictionary, updates it using the function in the library.
+"""
 def passive(request):
     result_dict = {'prot_opt1':'HTTP','prot_opt2':'HTTPS', 'passive_port':'80'}
     if request.method == "POST":
@@ -97,7 +99,10 @@ def passive(request):
     return render(request, 'tools/passive.html', result_dict)
 
 
-
+"""
+Receives a POST request. Handles the information depending on the user configuration.
+After creating an initial dictionary, uses the function in the library to update it.
+"""
 def active(request):
     result_dict = {'prot_opt1':'HTTP','prot_opt2':'HTTPS', 'active_port':'80'}
     if request.method == "POST":
@@ -118,6 +123,9 @@ def active(request):
     return render(request, 'tools/active.html', result_dict)
 
 
+"""
+Handles the information depending on the button that was clicked. It (for now) has only 4 options
+"""
 def scanner(request):
     result_dict = {'scanner_port':'443'}
     if request.method == "POST":
@@ -134,6 +142,10 @@ def scanner(request):
     return render(request, 'tools/scanner.html', result_dict)
 
 
+"""
+Such as the "crypto" module, this function handles many buttons. Depending on that, is the function that is called
+to return the data.
+"""
 def network(request):
     message = ""
     result_dict = {}

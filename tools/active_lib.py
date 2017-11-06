@@ -3,6 +3,11 @@
 from requests import get
 from anytree import Node, RenderTree, Resolver, DoubleStyle, PreOrderIter
 
+
+"""
+Return an URL depending on the user configuration.
+This function is important to look for this URL in the HTTP response and crawl it.
+"""
 def get_url(ip,port,protocol):
     if protocol == "HTTP":
         if port not in ['80','443']:
@@ -16,6 +21,11 @@ def get_url(ip,port,protocol):
             url = "https://%s" % (ip)
     return url
 
+
+"""
+This is a recursive function that add to the "base" node all the data in "resource"
+"Resource" is a list of the components of an URL (splitted by '/')
+"""
 def add_to_structure(base, resource):
     try:
         r = Resolver("name")
@@ -30,6 +40,10 @@ def add_to_structure(base, resource):
     except Exception as e:
         return {'web_structure':e}
 
+
+"""
+Returns a string that can be printed in a "text area" in form of a tree.
+"""
 def render_tree(root):
     result = ''
     for pre, _, node in RenderTree(root,style=DoubleStyle):
@@ -38,6 +52,11 @@ def render_tree(root):
     return result
 
 
+"""
+Looks in the HTTP response all the coincidences of the URL of the site.
+Initially, it looks for strings in the form of: "http(s)://mysite.com so
+it can be crawled. When the resource is found, adds it to the structure (tree)
+"""
 def get_tree_href(text,site,url):
     base_node = Node(site, parent=None)
     base = '\"'+url #The base is something like: "http://mysite.com
@@ -54,6 +73,11 @@ def get_tree_href(text,site,url):
 	        add_to_structure(base_node,resource)
     return base_node
 
+
+"""
+This function is similar to "get_tree_href" but it looks for links that are called with "href" and "src"
+but does not start with "http" or "//" so links that are made "locally" can be added by the crawler
+"""
 def update_tree_src(tree, text):
     base1 = 'src="' 
     base2 = 'href="' 
@@ -78,6 +102,9 @@ def update_tree_src(tree, text):
         	        add_to_structure(tree,resource)
 
 
+"""
+Makes the HTTP get request and calls the other functions to make the crawling
+"""
 def map_server(site, url):
     try:
         response = get(url, verify=False, timeout=6)
@@ -92,6 +119,11 @@ def map_server(site, url):
     except Exception as e:
         return {'error1': e}
 
+
+"""
+It is used to get a path like "/img/2017/nov" from the tree structure.
+This path will be used to complete the URLs and look for important files
+"""
 def get_node_path(node):
     try:
         path = '/'
@@ -102,6 +134,11 @@ def get_node_path(node):
         pass
 
 
+"""
+This function looks for all the nodes in the tree that are not leafs. This is useful to determine
+which of the nodes are directories and which are files. It may be that some leaf nodes are also
+directories but the tool will suppose the opposite
+"""
 def get_directories(url, tree):
     try:
         a = []
@@ -114,6 +151,10 @@ def get_directories(url, tree):
         pass 
 
 
+"""
+Will look in all the directories for some common names that may represent backup files.
+This function is as fast or slow as the amount of directories found.
+"""
 def get_backup_files(urls):
     try:
         files = ['backup.sql','backup.db','dump.sql','dump.db','backup.old']
@@ -128,6 +169,11 @@ def get_backup_files(urls):
     except Exception as e:
         return {'error2':[e]}
 
+
+"""
+Will look in all the directories for some common names that may represent sensitive files.
+This function is as fast or slow as the amount of directories found.
+"""
 def get_sensitive_files(urls):
     try:
         files = ['.htaccess','info.php']
@@ -143,6 +189,9 @@ def get_sensitive_files(urls):
         return {'error3':[e]}
 
 
+"""
+This function will make a request for each directory found. It tries to determine of that directory allows indexing/listing.
+"""
 def get_directory_indexing(urls):
     try:
         result = []
@@ -157,6 +206,11 @@ def get_directory_indexing(urls):
     except Exception as e:
         return {'error4':[e]}
 
+
+"""
+Will look in all the directories for some common names that may represent installation directories.
+This function is as fast or slow as the amount of directories found.
+"""
 def get_installation_dirs(urls):
     try:
         dirs = ['setup','install']
@@ -171,6 +225,11 @@ def get_installation_dirs(urls):
     except Exception as e:
         return {'error5':[e]}
 
+
+"""
+Will look in all the directories for some common names that may represent administration pages.
+This function is as fast or slow as the amount of directories found.
+"""
 def get_admin_dirs(urls):
     try:
         dirs = ['admin','user','wp-admin']
