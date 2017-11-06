@@ -7,6 +7,8 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-theme.min.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body class="container-fluid" id="body">
 	<header class="header2">
@@ -16,11 +18,29 @@
 					<a class="navbar-brand" href="{% url 'tool_list'  %}" style="padding-left:40px;">WSSK</a>
 				</div>
 				<ul class="nav navbar-nav">
+					<li><a href="scanner.html">Vulnerability scanner</a></li>
 					<li><a href="active.html">Active analysis</a></li>
 					<li><a href="passive.html">Passive analysis</a></li>
-					<li><a href="crypto.html">Crypto tools</a></li>
-					<li><a href="network.html">Network tools</a></li>
-					<li><a href="scanner.html">Vulnerability scanner</a></li>
+					<li class="dropdown"><a href="network.html" class="dropdown-toggle" data-toggle="dropdown">Network tools</a>
+						<ul class="dropdown-menu">
+							<li><a href="network.html#ip">What's my IP</a></li>
+							<li><a href="network.html#ping">Ping</a></li>
+							<li><a href="network.html#whois">Whois</a></li>
+							<li><a href="network.html#traceroute">Traceroute</a></li>
+							<li><a href="network.html#lookup">DNS lookup</a></li>
+							<li><a href="network.html#reverse">Reverse lookup</a></li>
+						</ul>
+					</li>
+					<li class="dropdown"><a href="crypto.html" class="dropdown-toggle" data-toggle="dropdown">Crypto tools</a>
+						<ul class="dropdown-menu">
+							<li><a href="crypto.html#encoder">Text encoder</a></li>
+							<li><a href="crypto.html#calculator">Hash calculator</a></li>
+							<li><a href="crypto.html#caesar">Caesar cipher</a></li>
+							<li><a href="crypto.html#monoalphabetic">Monoalphabetic cipher</a></li>
+							<li><a href="crypto.html#vigenere">Vigenere cipher</a></li>
+							<li><a href="crypto.html#transposition">Transposition cipher</a></li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 		</nav>
