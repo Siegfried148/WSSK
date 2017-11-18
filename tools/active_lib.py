@@ -107,7 +107,7 @@ Makes the HTTP get request and calls the other functions to make the crawling
 """
 def map_server(site, url):
     try:
-        response = get(url, verify=False, timeout=6)
+        response = get(url, verify=False, timeout=3)
         if response.status_code == 200:
             text = response.text.split('\n')
             tree = get_tree_href(text, site, url)
@@ -161,7 +161,7 @@ def get_backup_files(urls):
         backups_result = []
         for f in files:
             for u in urls:
-	        response = get('%s%s' % (u,f), verify=False, timeout=6, allow_redirects=False)
+	        response = get('%s%s' % (u,f), verify=False, timeout=4, allow_redirects=False)
 	        if response.status_code in [200]:
                     backups_result.append('%s%s' % (u,f))
         result_back = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
@@ -180,7 +180,7 @@ def get_sensitive_files(urls):
         result = []
         for f in files:
             for u in urls:
-	        response = get('%s%s' % (u,f), verify=False, timeout=6, allow_redirects=False)
+	        response = get('%s%s' % (u,f), verify=False, timeout=4, allow_redirects=False)
 	        if response.status_code in [200]:
                     result.append('%s%s' % (u,f))
         result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':['No sensitive files found']}
@@ -196,7 +196,7 @@ def get_directory_indexing(urls):
     try:
         result = []
         for u in urls:
-            response = get(u, verify=False, timeout=6, allow_redirects=False)
+            response = get(u, verify=False, timeout=4, allow_redirects=False)
             if not (response.status_code in [200] and ('Index of' in response.text or 'Directory listing for' in response.text)):
                 continue
             else:
@@ -217,7 +217,7 @@ def get_installation_dirs(urls):
         result = []
         for d in dirs:
             for u in urls:
-	        response = get('%s%s' % (u,d), verify=False, timeout=6, allow_redirects=False)
+	        response = get('%s%s' % (u,d), verify=False, timeout=4, allow_redirects=False)
 	        if response.status_code in [200,301]:
                     result.append('%s%s' % (u,d))
         result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No installation directories found']}
@@ -236,7 +236,7 @@ def get_admin_dirs(urls):
         result = []
         for d in dirs:
             for u in urls:
-	        response = get('%s%s' % (u,d), verify=False, timeout=6, allow_redirects=False)
+	        response = get('%s%s' % (u,d), verify=False, timeout=4, allow_redirects=False)
 	        if response.status_code in [200,301]:
                     result.append('%s%s' % (u,d))
         result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':['No administration directories found']}
@@ -249,19 +249,23 @@ def get_admin_dirs(urls):
 """
 Calls the other functions tog get info from the server
 """
-def active_analysis(site, port, protocol):
+def active_analysis(url):
     try:
-        if site == '' or port == '':
-            return {'active_ip':'Specify an IP address or domain name and a port.', 'active_port':port}
+        if url == '':
+            return {'active_url':'Specify the URL to analyze.'}
         result_dict = {'result':True}
-        url = get_url(site,str(port),protocol)
+        site = url.split('//')[1]
+        if '/' in site:
+            site = site.split('/')[0]
+        if url.endswith('/'):
+            url = url[:-1]
         web_structure, tree = map_server(site,url)
         dirs = get_directories(url, tree)
         result_dict.update(web_structure)
-#        result_dict.update(get_backup_files(dirs))
-#        result_dict.update(get_sensitive_files(dirs))
-#        result_dict.update(get_directory_indexing(dirs))
-#        result_dict.update(get_installation_dirs(dirs))
+        result_dict.update(get_backup_files(dirs))
+        result_dict.update(get_sensitive_files(dirs))
+        result_dict.update(get_directory_indexing(dirs))
+        result_dict.update(get_installation_dirs(dirs))
         result_dict.update(get_admin_dirs(dirs))
 #        result_dict.update(get_cms(url))
         return result_dict

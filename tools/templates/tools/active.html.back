@@ -12,11 +12,31 @@
 				<form name = "form" action = "{% url "active" %}#results" method = "POST" >{% csrf_token %} 
 					<div class="row">
 						<div class="col-md-7 col-md-offset-1 col-lg-7 col-lg-offset-1">
-							<label for="comment">URL:</label>
-							{% if active_url %}
-							<input type="text" class="form-control" value="{{ active_url }}" name="active_url">
+							<label for="comment">IP address or domain name:</label>
+							{% if active_ip %}
+							<input type="text" class="form-control" value="{{ active_ip }}" name="active_ip">
 							{% else %}
-							<input type="text" class="form-control" value="" name="active_url">
+							<input type="text" class="form-control" value="" name="active_ip">
+							{% endif %}
+						</div>
+						<div class="col-md-4 col-lg-4">
+							<label for="comment">Port:</label>
+							{% if active_port %}
+							<input type="text" class="form-control" value="{{ active_port }}" name="active_port">
+							{% else %}
+							<input type="text" class="form-control" value="" name="active_port">
+							{% endif %}
+						</div>
+					</div>
+				        <br>
+					<div class="row">
+						<div class="col-md-4 col-md-offset-1 col-lg-4 col-lg-offset-1 ">
+							<label for="comment">Protocol</label>
+							{% if prot_opt1 %}
+							<select class="form-control" name="protocol">
+								<option class="opt">{{ prot_opt1 }}</option>
+								<option class="opt">{{ prot_opt2 }}</option>
+							</select>
 							{% endif %}
 						</div>
 					</div>

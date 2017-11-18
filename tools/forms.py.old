@@ -45,10 +45,16 @@ class ReverseForm(forms.Form):
     reverse_name = forms.CharField(max_length = 150, required=False)
 
 class PassiveForm(forms.Form):
-    passive_url = forms.CharField(max_length = 150, required=False)
+    options = (('HTTP','HTTP'),('HTTPS','HTTPS'))
+    passive_ip = forms.CharField(max_length = 150, required=False)
+    passive_port = forms.CharField(max_length = 5, required=False)
+    protocol = forms.ChoiceField(choices = options, required=False)
 
 class ActiveForm(forms.Form):
-    active_url = forms.CharField(max_length = 150, required=False)
+    options = (('HTTP','HTTP'),('HTTPS','HTTPS'))
+    active_ip = forms.CharField(max_length = 150, required=False)
+    active_port = forms.CharField(max_length = 5, required=False)
+    protocol = forms.ChoiceField(choices = options, required=False)
 
 class ScannerForm(forms.Form):
     scanner_ip = forms.CharField(max_length = 150, required=False)

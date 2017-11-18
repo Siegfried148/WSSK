@@ -80,14 +80,22 @@ Receives a POST request. Handles the information depending on the user configura
 After creating an initial dictionary, updates it using the function in the library.
 """
 def passive(request):
-    result_dict = {}
+    result_dict = {'prot_opt1':'HTTP','prot_opt2':'HTTPS', 'passive_port':'80'}
     if request.method == "POST":
         if 'passive_btn' in request.POST:
             message = PassiveForm(request.POST)
             if message.is_valid():
-                url = message.cleaned_data['passive_url']
-                result_dict.update({'passive_url':url})
-                result_dict.update(passive_analysis(url))
+                ip = message.cleaned_data['passive_ip']
+                port = message.cleaned_data['passive_port']
+                protocol = message.cleaned_data['protocol']
+                if protocol == 'HTTP':
+                    prot_opt1 = 'HTTP'
+                    prot_opt2 = 'HTTPS'
+                else:
+                    prot_opt1 = 'HTTPS'
+                    prot_opt2 = 'HTTP'
+                result_dict.update({'prot_opt1':prot_opt1,'prot_opt2':prot_opt2, 'passive_port':port, 'passive_ip':ip})
+                result_dict.update(passive_analysis(ip, port, protocol))
     return render(request, 'tools/passive.html', result_dict)
 
 
@@ -96,14 +104,22 @@ Receives a POST request. Handles the information depending on the user configura
 After creating an initial dictionary, uses the function in the library to update it.
 """
 def active(request):
-    result_dict = {}
+    result_dict = {'prot_opt1':'HTTP','prot_opt2':'HTTPS', 'active_port':'80'}
     if request.method == "POST":
         if 'active_btn' in request.POST:
             message = ActiveForm(request.POST)
             if message.is_valid():
-                url = message.cleaned_data['active_url']
-                result_dict.update({'active_url':url})
-                result_dict.update(active_analysis(url))
+                ip = message.cleaned_data['active_ip']
+                port = message.cleaned_data['active_port']
+                protocol = message.cleaned_data['protocol']
+                if protocol == 'HTTP':
+                    prot_opt1 = 'HTTP'
+                    prot_opt2 = 'HTTPS'
+                else:
+                    prot_opt1 = 'HTTPS'
+                    prot_opt2 = 'HTTP'
+                result_dict.update({'prot_opt1':prot_opt1,'prot_opt2':prot_opt2, 'active_port':port, 'active_ip':ip})
+                result_dict.update(active_analysis(ip, port, protocol))
     return render(request, 'tools/active.html', result_dict)
 
 

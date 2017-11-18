@@ -204,14 +204,22 @@ def get_key(raw_cert):
 This function calls all the other functions that get info from the certificate.
 It updates the resulting dictionary with each function
 """
-def check_certificate(ip, port=443):
+def check_certificate(url):
     result = {}
     try:
         ctx = create_default_context()
 #        ctx = _create_unverified_context()
+        site = url.split('//')[1]
+        if '/' in site:
+            site = site.split('/')[0]
+        if ':' in site:
+            site = site.split(':')[0]
+            port = int(site.split(':')[1])
+        else:
+            port = 443
 	ctx.check_hostname = False
-	ssl_socket = ctx.wrap_socket(socket(), server_hostname=ip)
-	ssl_socket.connect((ip, port))
+	ssl_socket = ctx.wrap_socket(socket(), server_hostname=site)
+	ssl_socket.connect((site, port))
 	cert = ssl_socket.getpeercert()
 	raw_cert = ssl_socket.getpeercert(1)
 	result.update(get_domain(cert))
@@ -224,7 +232,7 @@ def check_certificate(ip, port=443):
         return result
         
     except Exception as e:
-        result.update({'error3':'holi'})
+        result.update({'error3':e})
         return result
 
 
@@ -233,9 +241,8 @@ Uses crafted Http Adapters to start new sessions forcing to use
 each SSL protocols. If an exception is raised, the server does not support
 the format
 """
-def check_ssl_protocols(ip, port=443):
+def check_ssl_protocols(url):
     result = {'ssl_protocols':[]}
-    url = 'https://%s:%s' % (ip,port)
     protocols = []
     try:
         try:
@@ -269,29 +276,19 @@ def check_ssl_protocols(ip, port=443):
 """
 Calls the other functions tog get info from the server
 """
-def passive_analysis(ip, port, protocol):
+def passive_analysis(url):
     try:
-        if ip == '' or port == '':
-            return {'passive_ip':'Specify an IP address or domain name and a port.', 'passive_port':port}
+        if url == '':
+            return {'passive_url':'Specify an URL to analyze.'}
 
         result_dict = {'result':True}
-        if protocol == "HTTP":
-            url = "http://%s:%s" % (ip, port)
-        else:
-            url = "https://%s:%s" % (ip, port)
-
         result_dict.update(check_headers(url))
         result_dict.update(check_methods(url))
         result_dict.update(check_index(url))
         result_dict.update(check_robots(url))
         result_dict.update(check_install(url))
-        if protocol == 'HTTPS':
-            result_dict.update(check_certificate(ip, int(port)))
-            result_dict.update(check_ssl_protocols(ip, int(port)))
-        else:
-            result_dict.update(check_certificate(ip))
-            result_dict.update(check_ssl_protocols(ip))
-
+        result_dict.update(check_certificate(url))
+        result_dict.update(check_ssl_protocols(url))
 
         return result_dict
     except ValueError as e:
