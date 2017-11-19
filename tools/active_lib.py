@@ -2,24 +2,22 @@
 #Castro Rendón Virgilio
 from requests import get
 from anytree import Node, RenderTree, Resolver, DoubleStyle, PreOrderIter
-
+from django.core.files import File
+debug = True
 
 """
 Return an URL depending on the user configuration.
 This function is important to look for this URL in the HTTP response and crawl it.
 """
-def get_url(ip,port,protocol):
-    if protocol == "HTTP":
-        if port not in ['80','443']:
-            url = "http://%s:%s" % (ip, port)
-        else:
-            url = "http://%s" % (ip)
-    else:
-        if port not in ['80','443']:
-            url = "https://%s:%s" % (ip, port)
-        else:
-            url = "https://%s" % (ip)
-    return url
+def get_url(url):
+    if url.endswith('/'):
+        url = url[:-1]
+    if not (url.startswith('http://') or url.startswith('https://')):
+        url = 'http://'+url
+    site = url.split('//')[1]
+    if '/' in site:
+        site = site.split('/')[0]
+    return site, url
 
 
 """
@@ -30,6 +28,8 @@ def add_to_structure(base, resource):
     try:
         r = Resolver("name")
         try:
+            if '?' in resource[0]:
+                return
             existing_node = r.get(base, resource[0])
             if len(resource) > 1:
                 add_to_structure(existing_node,resource[1:])
@@ -107,7 +107,9 @@ Makes the HTTP get request and calls the other functions to make the crawling
 """
 def map_server(site, url):
     try:
-        response = get(url, verify=False, timeout=3)
+        response = get(url, verify=False, timeout=5)
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Server map', '*'*30)
+        if debug: print '\n'+url
         if response.status_code == 200:
             text = response.text.split('\n')
             tree = get_tree_href(text, site, url)
@@ -155,38 +157,52 @@ def get_directories(url, tree):
 Will look in all the directories for some common names that may represent backup files.
 This function is as fast or slow as the amount of directories found.
 """
-def get_backup_files(urls):
+def get_backup_files(url):
     try:
-        files = ['backup.sql','backup.db','dump.sql','dump.db','backup.old']
         backups_result = []
-        for f in files:
-            for u in urls:
-	        response = get('%s%s' % (u,f), verify=False, timeout=4, allow_redirects=False)
-	        if response.status_code in [200]:
-                    backups_result.append('%s%s' % (u,f))
-        result_back = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
-        return result_back
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Backup files', '*'*30)
+        with open('/opt/backup_names.short','r') as f:
+            files = File(f)
+            for _file in files:
+                new_url = ('%s/%s' % (url,_file[:-1]))
+                if debug: print '\n'+new_url
+                response = get(new_url, verify=False, timeout=4, allow_redirects=False)
+                if debug: print response.status_code
+                if response.status_code in [200,301]:
+                    backups_result.append(new_url)
+        result_dict = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
+        return result_dict
     except Exception as e:
-        return {'error2':[e]}
+        result_dict = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
+        #result_dict.update({'error2':[e]})
+        print e
+        return result_dict
 
 
 """
 Will look in all the directories for some common names that may represent sensitive files.
 This function is as fast or slow as the amount of directories found.
 """
-def get_sensitive_files(urls):
+def get_sensitive_files(url):
     try:
-        files = ['.htaccess','info.php']
         result = []
-        for f in files:
-            for u in urls:
-	        response = get('%s%s' % (u,f), verify=False, timeout=4, allow_redirects=False)
-	        if response.status_code in [200]:
-                    result.append('%s%s' % (u,f))
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Sensitive files', '*'*30)
+        with open('/opt/sensitive_files.short','r') as f:
+            files = File(f)
+            for _file in files:
+                new_url = ('%s/%s' % (url,_file[:-1]))
+                if debug: print '\n'+new_url
+                response = get(new_url, verify=False, timeout=4, allow_redirects=False)
+                if debug: print response.status_code
+                if response.status_code in [200,301]:
+                    result.append(new_url)
         result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':['No sensitive files found']}
         return result_dict
     except Exception as e:
-        return {'error3':[e]}
+        result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':['No sensitive files found']}
+        #result_dict.update({'error3':[e]})
+        print e
+        return result_dict
 
 
 """
@@ -195,8 +211,11 @@ This function will make a request for each directory found. It tries to determin
 def get_directory_indexing(urls):
     try:
         result = []
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Directory indexing', '*'*30)
         for u in urls:
+            if debug: print '\n'+u
             response = get(u, verify=False, timeout=4, allow_redirects=False)
+            if debug: print response.status_code
             if not (response.status_code in [200] and ('Index of' in response.text or 'Directory listing for' in response.text)):
                 continue
             else:
@@ -204,26 +223,36 @@ def get_directory_indexing(urls):
         result_dict = {'indexing':result} if result != [] else {'indexing':['No directory with indexing was found']}
         return result_dict
     except Exception as e:
-        return {'error4':[e]}
+        result_dict = {'indexing':result} if result != [] else {'indexing':['No directory with indexing was found']}
+        #result_dict.update({'error4':[e]})
+        print e
+        return result_dict
 
 
 """
 Will look in all the directories for some common names that may represent installation directories.
 This function is as fast or slow as the amount of directories found.
 """
-def get_installation_dirs(urls):
+def get_installation_dirs(url):
     try:
-        dirs = ['setup','install']
         result = []
-        for d in dirs:
-            for u in urls:
-	        response = get('%s%s' % (u,d), verify=False, timeout=4, allow_redirects=False)
-	        if response.status_code in [200,301]:
-                    result.append('%s%s' % (u,d))
-        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No installation directories found']}
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Installation directories', '*'*30)
+        with open('/opt/installation_dirs','r') as f:
+            files = File(f)
+            for _file in files:
+                new_url = ('%s/%s' % (url,_file[:-1]))
+                if debug: print '\n'+new_url
+                response = get(new_url, verify=False, timeout=4, allow_redirects=False)
+                if debug: print response.status_code
+                if response.status_code in [200,301]:
+                    result.append(new_url)
+        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No sensitive files found']}
         return result_dict
     except Exception as e:
-        return {'error5':[e]}
+        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No sensitive files found']}
+        #result_dict.update({'error5':[e]})
+        print e
+        return result_dict
 
 
 """
@@ -231,6 +260,7 @@ Will look in all the directories for some common names that may represent admini
 This function is as fast or slow as the amount of directories found.
 """
 def get_admin_dirs(urls):
+    result_dict = {'admin_dirs':''}
     try:
         dirs = ['admin','user','wp-admin']
         result = []
@@ -242,7 +272,8 @@ def get_admin_dirs(urls):
         result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':['No administration directories found']}
         return result_dict
     except Exception as e:
-        return {'error6':[e]}
+        result_dict.update({'error6':[e]})
+        return result_dict
 
 
 
@@ -250,23 +281,19 @@ def get_admin_dirs(urls):
 Calls the other functions tog get info from the server
 """
 def active_analysis(url):
+    site, url = get_url(url)
+    result_dict = {'result':True, 'active_url':url}
     try:
         if url == '':
             return {'active_url':'Specify the URL to analyze.'}
-        result_dict = {'result':True}
-        site = url.split('//')[1]
-        if '/' in site:
-            site = site.split('/')[0]
-        if url.endswith('/'):
-            url = url[:-1]
         web_structure, tree = map_server(site,url)
         dirs = get_directories(url, tree)
         result_dict.update(web_structure)
-        result_dict.update(get_backup_files(dirs))
-        result_dict.update(get_sensitive_files(dirs))
+        result_dict.update(get_backup_files(url))
+        result_dict.update(get_sensitive_files(url))
         result_dict.update(get_directory_indexing(dirs))
-        result_dict.update(get_installation_dirs(dirs))
-        result_dict.update(get_admin_dirs(dirs))
+#        result_dict.update(get_installation_dirs(url))
+#        result_dict.update(get_admin_dirs(dirs))
 #        result_dict.update(get_cms(url))
         return result_dict
     except ValueError as e:

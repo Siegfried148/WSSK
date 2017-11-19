@@ -1,0 +1,17 @@
+.git
+.svn
+.robots
+.cache
+.ftp-access
+.ftppass
+.history
+.passwd
+.password
+.passwords
+info.php
+info.txt
+php-info.php
+phpinfo
+phpinfo.php
+server-info
+.server-info

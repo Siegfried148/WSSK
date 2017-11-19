@@ -35,7 +35,7 @@ def check_index(url):
         index_result = ''
         for index in indexes:
             has_index = True
-            response = get('%s/%s' % (url,index), verify=False, timeout=6)
+            response = get('%s/%s' % (url,index), verify=False, timeout=4)
             if response.status_code == 200:
                 for hist_response in response.history:
                     if hist_response.status_code == 302:
@@ -58,7 +58,7 @@ it supposes that the file exists
 def check_robots(url):
     try:
         has_robots = True
-        response = get('%s/%s' % (url,'robots.txt'), verify=False, timeout=6)
+        response = get('%s/%s' % (url,'robots.txt'), verify=False, timeout=4)
         if response.status_code == 200:
             for hist_response in response.history:
                 if hist_response.status_code == 302:
@@ -81,7 +81,7 @@ def check_install(url):
         directories = ['setup','install']
         dirs_result = ''
         for d in directories:
-            response = get('%s/%s' % (url,d), verify=False, timeout=6)
+            response = get('%s/%s' % (url,d), verify=False, timeout=4)
             if response.status_code in [200,403]:
                 for hist_response in response.history:
                     if hist_response.status_code == 302:
@@ -102,7 +102,7 @@ Checks the answer looking for the headers.
 """
 def check_headers(url):
     try:
-	    response = get(url, verify=False, timeout=6)
+	    response = get(url, verify=False, timeout=4)
 	    headers = response.headers
 	    signature = headers['Server'] if 'Server' in headers else 'Header is not set'
 	    php_version = headers['X-Powered-By'] if 'X-Powered-By' in headers else 'Header is not set'
@@ -248,21 +248,21 @@ def check_ssl_protocols(url):
         try:
             s1 = Session()
             s1.mount(url, Tls1HttpAdapter())
-            s1.get(url, verify=False)
+            s1.get(url, verify=False, timeout=4)
             protocols.append('TLS v. 1 : YES')
         except:
             protocols.append('TLS v. 1 : NO')
         try:
             s2 = Session()
             s2.mount(url, Tls1_1HttpAdapter())
-            s2.get(url, verify=False)
+            s2.get(url, verify=False, timeout=4)
             protocols.append('TLS v. 1.1 : YES')
         except:
             protocols.append('TLS v. 1.1 : NO')
         try:
             s3 = Session()
             s3.mount(url, Tls1_2HttpAdapter())
-            s3.get(url, verify=False)
+            s3.get(url, verify=False, timeout=4)
             protocols.append('TLS v. 1.2 : YES')
         except:
             protocols.append('TLS v. 1.2 : NO')

@@ -102,7 +102,6 @@ def active(request):
             message = ActiveForm(request.POST)
             if message.is_valid():
                 url = message.cleaned_data['active_url']
-                result_dict.update({'active_url':url})
                 result_dict.update(active_analysis(url))
     return render(request, 'tools/active.html', result_dict)
 
