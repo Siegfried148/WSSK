@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 #Castro Rendón Virgilio
+import urllib3
 from requests import get
 from anytree import Node, RenderTree, Resolver, DoubleStyle, PreOrderIter
 from django.core.files import File
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 debug = True
 
 """
@@ -166,10 +168,14 @@ def get_backup_files(url):
             for _file in files:
                 new_url = ('%s/%s' % (url,_file[:-1]))
                 if debug: print '\n'+new_url
-                response = get(new_url, verify=False, timeout=4, allow_redirects=False)
-                if debug: print response.status_code
-                if response.status_code in [200,301]:
-                    backups_result.append(new_url)
+                response = get(new_url, verify=False, timeout=4)
+                if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
+                if response.status_code == 200:
+                    for h in response.history:
+                        if h.status_code == 302:
+                            break
+                    else:
+                        backups_result.append(new_url)
         result_dict = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
         return result_dict
     except Exception as e:
@@ -192,10 +198,14 @@ def get_sensitive_files(url):
             for _file in files:
                 new_url = ('%s/%s' % (url,_file[:-1]))
                 if debug: print '\n'+new_url
-                response = get(new_url, verify=False, timeout=4, allow_redirects=False)
-                if debug: print response.status_code
-                if response.status_code in [200,301]:
-                    result.append(new_url)
+                response = get(new_url, verify=False, timeout=4)
+                if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
+                if response.status_code == 200:
+                    for h in response.history:
+                        if h.status_code == 302:
+                            break
+                    else:
+                        result.append(new_url)
         result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':['No sensitive files found']}
         return result_dict
     except Exception as e:
@@ -236,20 +246,24 @@ This function is as fast or slow as the amount of directories found.
 def get_installation_dirs(url):
     try:
         result = []
-        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Installation directories', '*'*30)
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Installation Directories', '*'*30)
         with open('/opt/installation_dirs','r') as f:
             files = File(f)
             for _file in files:
                 new_url = ('%s/%s' % (url,_file[:-1]))
                 if debug: print '\n'+new_url
-                response = get(new_url, verify=False, timeout=4, allow_redirects=False)
-                if debug: print response.status_code
-                if response.status_code in [200,301]:
-                    result.append(new_url)
-        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No sensitive files found']}
+                response = get(new_url, verify=False, timeout=4)
+                if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
+                if response.status_code == 200:
+                    for h in response.history:
+                        if h.status_code == 302:
+                            break
+                    else:
+                        result.append(new_url)
+        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No instalaltion directories found']}
         return result_dict
     except Exception as e:
-        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No sensitive files found']}
+        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No installation directories found']}
         #result_dict.update({'error5':[e]})
         print e
         return result_dict
@@ -259,20 +273,29 @@ def get_installation_dirs(url):
 Will look in all the directories for some common names that may represent administration pages.
 This function is as fast or slow as the amount of directories found.
 """
-def get_admin_dirs(urls):
-    result_dict = {'admin_dirs':''}
+def get_admin_dirs(url):
     try:
-        dirs = ['admin','user','wp-admin']
         result = []
-        for d in dirs:
-            for u in urls:
-	        response = get('%s%s' % (u,d), verify=False, timeout=4, allow_redirects=False)
-	        if response.status_code in [200,301]:
-                    result.append('%s%s' % (u,d))
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Administration directories', '*'*30)
+        with open('/opt/admin_dirs.short','r') as f:
+            files = File(f)
+            for _file in files:
+                new_url = ('%s/%s' % (url,_file[:-1]))
+                if debug: print '\n'+new_url
+                response = get(new_url, verify=False, timeout=4)
+                if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
+                if response.status_code == 200:
+                    for h in response.history:
+                        if h.status_code == 302:
+                            break
+                    else:
+                        result.append(new_url)
         result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':['No administration directories found']}
         return result_dict
     except Exception as e:
-        result_dict.update({'error6':[e]})
+        result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':['No administration directories found']}
+        #result_dict.update({'error6':[e]})
+        print e
         return result_dict
 
 
@@ -290,12 +313,13 @@ def active_analysis(url):
         dirs = get_directories(url, tree)
         result_dict.update(web_structure)
         result_dict.update(get_backup_files(url))
-        result_dict.update(get_sensitive_files(url))
-        result_dict.update(get_directory_indexing(dirs))
+#        result_dict.update(get_sensitive_files(url))
+#        result_dict.update(get_directory_indexing(dirs))
 #        result_dict.update(get_installation_dirs(url))
-#        result_dict.update(get_admin_dirs(dirs))
+        result_dict.update(get_admin_dirs(url))
 #        result_dict.update(get_cms(url))
         return result_dict
     except ValueError as e:
+        print e
         result_dict.update({'error1':'Maybe the server is not up', 'result':True})
         return result_dict
