@@ -1,11 +1,27 @@
 # -*- coding: utf-8 -*-
 #Castro Rendón Virgilio
+import urllib3
+from django.core.files import File
 from requests import get, options, Session
 from ssl import create_default_context, PROTOCOL_SSLv23, PROTOCOL_TLSv1, PROTOCOL_TLSv1_1, PROTOCOL_TLSv1_2, _create_unverified_context
 from socket import socket
 from M2Crypto import X509
 from binascii import hexlify
 from .httpAdapters import *
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+debug = True
+
+
+def get_url(url):
+    if url.endswith('/'):
+        url = url[:-1]
+    if not (url.startswith('http://') or url.startswith('https://')):
+        url = 'http://'+url
+    site = url.split('//')[1]
+    if '/' in site:
+        site = site.split('/')[0]
+    return site, url
+
 
 """
 Sends an HTTP request using the OPTIONS method
@@ -13,13 +29,17 @@ This is useful to determine which other HTTP methods it supports
 """
 def check_methods(url):
     try:
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'HTTP headers analysis', '*'*30)
+        if debug: print '\n'+url
         response = options(url, verify=False, timeout=6)
+        if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
         if 'allow' in response.headers:
             http_methods = response.headers['allow']
         else:
             http_methods = 'Could not determine HTTP methods'
         return {'http_methods':http_methods}
     except Exception as e:
+        print e
         return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
@@ -30,24 +50,30 @@ it supposes that it has the file
 """
 def check_index(url):
     try:
-        code =[]
-        indexes = ['index.html','index.htm','index.php','index.asp', 'index.phtml', 'index.cgi', 'index.xhtml']
+#        code =[]
         index_result = ''
-        for index in indexes:
-            has_index = True
-            response = get('%s/%s' % (url,index), verify=False, timeout=4)
-            if response.status_code == 200:
-                for hist_response in response.history:
-                    if hist_response.status_code == 302:
-                        has_index = False
-            else:
-                 has_index = False
-            if has_index:
-                index_result += '%s, ' % index
-        if index_result == '':
-            index_result = 'Could not find an index file  '
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'HTTP headers analysis', '*'*30)
+        with open('/opt/index_files.short','r') as f:
+            indexes = File(f)
+            for index in indexes:
+                has_index = True
+                new_url = ('%s/%s' % (url,index))[:-1]
+                if debug: print '\n'+new_url
+                response = get(new_url, verify=False, timeout=4)
+                if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
+                if response.status_code == 200:
+                    for h in response.history:
+                        if h.status_code == 302:
+                            has_index = False
+                else:
+                     has_index = False
+                if has_index:
+                    index_result += '%s, ' % index
+            if index_result == '':
+                index_result = 'Could not find an index file  '
         return {'index_files':index_result[:-2]}
     except Exception as e:
+        print e
         return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
@@ -58,7 +84,10 @@ it supposes that the file exists
 def check_robots(url):
     try:
         has_robots = True
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'HTTP headers analysis', '*'*30)
+        if debug: print '\n'+url
         response = get('%s/%s' % (url,'robots.txt'), verify=False, timeout=4)
+        if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
         if response.status_code == 200:
             for hist_response in response.history:
                 if hist_response.status_code == 302:
@@ -102,7 +131,10 @@ Checks the answer looking for the headers.
 """
 def check_headers(url):
     try:
+            if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'HTTP headers analysis', '*'*30)
+            if debug: print '\n'+url
 	    response = get(url, verify=False, timeout=4)
+            if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
 	    headers = response.headers
 	    signature = headers['Server'] if 'Server' in headers else 'Header is not set'
 	    php_version = headers['X-Powered-By'] if 'X-Powered-By' in headers else 'Header is not set'
@@ -133,6 +165,7 @@ def check_headers(url):
                     'cms':cms,
                     'cms_version':cms_version}
     except Exception as e:
+        print e
         return {'error2': 'HTTP Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
@@ -280,17 +313,18 @@ def passive_analysis(url):
     try:
         if url == '':
             return {'passive_url':'Specify an URL to analyze.'}
-
+        site,url = get_url(url)
         result_dict = {'result':True}
-        result_dict.update(check_headers(url))
-        result_dict.update(check_methods(url))
+#        result_dict.update(check_headers(url))
+#        result_dict.update(check_methods(url))
         result_dict.update(check_index(url))
-        result_dict.update(check_robots(url))
-        result_dict.update(check_install(url))
-        result_dict.update(check_certificate(url))
-        result_dict.update(check_ssl_protocols(url))
+#        result_dict.update(check_robots(url))
+#        result_dict.update(check_install(url))
+#        result_dict.update(check_certificate(url))
+#        result_dict.update(check_ssl_protocols(url))
 
         return result_dict
     except ValueError as e:
+        print e
         result_dict.update({'error1':e, 'result':True})
         return result_dict
