@@ -8,6 +8,7 @@ from socket import socket
 from M2Crypto import X509
 from binascii import hexlify
 from .httpAdapters import *
+from subprocess import check_output, Popen, PIPE, STDOUT
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 debug = True
 
@@ -269,7 +270,7 @@ def check_certificate(site):
         
     except Exception as e:
         print e
-        result.update({'error3':e})
+        result.update({'error3':'An error ocurred. Maybe the certificate is not valid.'})
         return result
 
 
@@ -330,6 +331,29 @@ def supportsSSL(site, url):
         return False
 
 
+def check_ciphers(site):
+    if ':' in site:
+        site = site.split(':')[0]
+        port = site.split(':')[1]
+    else:
+        port = '443'
+    try:
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Cipher suites detection', '*'*30)
+        if debug: print '\nhttps://'+site
+        process = Popen(['nmap','-sV', '-p', port, '--script','ssl-enum-ciphers',site], stdout=PIPE, stderr=STDOUT)
+        code = process.wait()
+        output = process.stdout.read()
+        output = output.split('ssl-enum-ciphers:')[1]
+        output = output.split('Service detection')[0]
+        output = output.split('\n')
+        return {'cipher_suites': output}
+    except ValueError as e:
+        print e
+        return {'error4':'Something went wrong'}
+
+
+
+
 """
 Calls the other functions tog get info from the server
 """
@@ -343,10 +367,11 @@ def passive_analysis(url):
         result_dict.update(check_methods(url))
         result_dict.update(check_index(url))
         result_dict.update(check_robots(url))
-#        result_dict.update(check_install(url))
+        result_dict.update(check_install(url))
         if supportsSSL(site,url):
             result_dict.update(check_certificate(site))
             result_dict.update(check_ssl_protocols(site))
+            result_dict.update(check_ciphers(site))
         else:
             result_dict.update({'error3':'This site does not supports HTTPS'})
         return result_dict
