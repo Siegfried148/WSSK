@@ -50,9 +50,8 @@ it supposes that it has the file
 """
 def check_index(url):
     try:
-#        code =[]
         index_result = ''
-        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'HTTP headers analysis', '*'*30)
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Index files', '*'*30)
         with open('/opt/index_files.short','r') as f:
             indexes = File(f)
             for index in indexes:
@@ -84,8 +83,8 @@ it supposes that the file exists
 def check_robots(url):
     try:
         has_robots = True
-        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'HTTP headers analysis', '*'*30)
-        if debug: print '\n'+url
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Robots', '*'*30)
+        if debug: print '\n'+url+'/robots.txt'
         response = get('%s/%s' % (url,'robots.txt'), verify=False, timeout=4)
         if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
         if response.status_code == 200:
@@ -109,8 +108,11 @@ def check_install(url):
         has_install = True
         directories = ['setup','install']
         dirs_result = ''
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Installation directories', '*'*30)
         for d in directories:
+            if debug: print '\n'+url+'/robots.txt'
             response = get('%s/%s' % (url,d), verify=False, timeout=4)
+            if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
             if response.status_code in [200,403]:
                 for hist_response in response.history:
                     if hist_response.status_code == 302:
@@ -237,22 +239,23 @@ def get_key(raw_cert):
 This function calls all the other functions that get info from the certificate.
 It updates the resulting dictionary with each function
 """
-def check_certificate(url):
+def check_certificate(site):
+    url = 'https://'+site
     result = {}
     try:
         ctx = create_default_context()
 #        ctx = _create_unverified_context()
-        site = url.split('//')[1]
-        if '/' in site:
-            site = site.split('/')[0]
         if ':' in site:
             site = site.split(':')[0]
             port = int(site.split(':')[1])
         else:
             port = 443
 	ctx.check_hostname = False
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Certificate analysis', '*'*30)
+        if debug: print '\n'+url
 	ssl_socket = ctx.wrap_socket(socket(), server_hostname=site)
 	ssl_socket.connect((site, port))
+        #if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
 	cert = ssl_socket.getpeercert()
 	raw_cert = ssl_socket.getpeercert(1)
 	result.update(get_domain(cert))
@@ -265,6 +268,7 @@ def check_certificate(url):
         return result
         
     except Exception as e:
+        print e
         result.update({'error3':e})
         return result
 
@@ -274,37 +278,57 @@ Uses crafted Http Adapters to start new sessions forcing to use
 each SSL protocols. If an exception is raised, the server does not support
 the format
 """
-def check_ssl_protocols(url):
+def check_ssl_protocols(site):
+    url = 'https://'+site
     result = {'ssl_protocols':[]}
     protocols = []
+    if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'SSL protocols', '*'*30)
+    if debug: print '\n'+url
     try:
         try:
+            if debug: print '\nChecking TLSv.1'
             s1 = Session()
             s1.mount(url, Tls1HttpAdapter())
             s1.get(url, verify=False, timeout=4)
             protocols.append('TLS v. 1 : YES')
-        except:
+        except Exception as e:
             protocols.append('TLS v. 1 : NO')
         try:
+            if debug: print '\nChecking TLSv.1.1'
             s2 = Session()
             s2.mount(url, Tls1_1HttpAdapter())
             s2.get(url, verify=False, timeout=4)
             protocols.append('TLS v. 1.1 : YES')
-        except:
+        except Exception as e:
             protocols.append('TLS v. 1.1 : NO')
         try:
+            if debug: print '\nChecking TLSv.1.2'
             s3 = Session()
             s3.mount(url, Tls1_2HttpAdapter())
             s3.get(url, verify=False, timeout=4)
             protocols.append('TLS v. 1.2 : YES')
-        except:
+        except Exception as e:
             protocols.append('TLS v. 1.2 : NO')
             
         result = {'ssl_protocols':protocols}
         return result
     except Exception as e:
-        result.update({'error3':e})
+        print e
+        result.update({'error3':'An unexpected error ocurred'})
         return result
+
+
+def supportsSSL(site, url):
+    try:
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Checking SSL/TLS support', '*'*30)
+        if debug: print '\nhttps://'+site
+        r = get('https://'+site, timeout=4, verify=False)
+        if r: return True
+        return False
+    except:
+        print "Doesn't support https"
+        return False
+
 
 """
 Calls the other functions tog get info from the server
@@ -315,14 +339,16 @@ def passive_analysis(url):
             return {'passive_url':'Specify an URL to analyze.'}
         site,url = get_url(url)
         result_dict = {'result':True}
-#        result_dict.update(check_headers(url))
-#        result_dict.update(check_methods(url))
+        result_dict.update(check_headers(url))
+        result_dict.update(check_methods(url))
         result_dict.update(check_index(url))
-#        result_dict.update(check_robots(url))
+        result_dict.update(check_robots(url))
 #        result_dict.update(check_install(url))
-#        result_dict.update(check_certificate(url))
-#        result_dict.update(check_ssl_protocols(url))
-
+        if supportsSSL(site,url):
+            result_dict.update(check_certificate(site))
+            result_dict.update(check_ssl_protocols(site))
+        else:
+            result_dict.update({'error3':'This site does not supports HTTPS'})
         return result_dict
     except ValueError as e:
         print e
