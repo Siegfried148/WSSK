@@ -4,6 +4,7 @@ import urllib3
 from requests import get
 from anytree import Node, RenderTree, Resolver, DoubleStyle, PreOrderIter
 from django.core.files import File
+from re import search
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 debug = True
 
@@ -82,7 +83,7 @@ but does not start with "http" or "//" so links that are made "locally" can be a
 """
 def update_tree_src(tree, text):
     base1 = 'src="' 
-    base2 = 'href="' 
+    base2 = 'href="'
     for line in text: 
 	indexes1 = [i for i in range(len(line)) if line.startswith(base1, i)]
 	indexes2 = [i for i in range(len(line)) if line.startswith(base2, i)]
@@ -92,16 +93,16 @@ def update_tree_src(tree, text):
 	        l_char_index = line[f_char_index:].index('"') + f_char_index  
 	        url = line[f_char_index:l_char_index].strip()
                 if not url.startswith('http') and not url.startswith('//'):
-        	        resource = url.split('/')
-        	        add_to_structure(tree,resource)
+                    resource = url.split('/')
+        	    add_to_structure(tree,resource)
         if indexes2 != []:
 	    for index in indexes2:
 	        f_char_index = index + 6    
 	        l_char_index = line[f_char_index:].index('"') + f_char_index  
 	        url = line[f_char_index:l_char_index].strip()
                 if not url.startswith('http') and not url.startswith('//'):
-        	        resource = url.split('/')
-        	        add_to_structure(tree,resource)
+        	    resource = url.split('/')
+        	    add_to_structure(tree,resource)
 
 
 """
@@ -176,10 +177,10 @@ def get_backup_files(url):
                             break
                     else:
                         backups_result.append(new_url)
-        result_dict = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
+        result_dict = {'backups':backups_result} if backups_result != [] else {'backups':"False"}
         return result_dict
     except Exception as e:
-        result_dict = {'backups':backups_result} if backups_result != [] else {'backups':['No backups found']}
+        result_dict = {'backups':backups_result} if backups_result != [] else {'backups':"False"}
         #result_dict.update({'error2':[e]})
         print e
         return result_dict
@@ -206,10 +207,10 @@ def get_sensitive_files(url):
                             break
                     else:
                         result.append(new_url)
-        result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':['No sensitive files found']}
+        result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':"False"}
         return result_dict
     except Exception as e:
-        result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':['No sensitive files found']}
+        result_dict = {'sensitive_files':result} if result != [] else {'sensitive_files':"False"}
         #result_dict.update({'error3':[e]})
         print e
         return result_dict
@@ -230,10 +231,10 @@ def get_directory_indexing(urls):
                 continue
             else:
                 result.append(u)
-        result_dict = {'indexing':result} if result != [] else {'indexing':['No directory with indexing was found']}
+        result_dict = {'indexing':result} if result != [] else {'indexing':"False"}
         return result_dict
     except Exception as e:
-        result_dict = {'indexing':result} if result != [] else {'indexing':['No directory with indexing was found']}
+        result_dict = {'indexing':result} if result != [] else {'indexing':"False"}
         #result_dict.update({'error4':[e]})
         print e
         return result_dict
@@ -260,10 +261,10 @@ def get_installation_dirs(url):
                             break
                     else:
                         result.append(new_url)
-        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No instalaltion directories found']}
+        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':"False"}
         return result_dict
     except Exception as e:
-        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':['No installation directories found']}
+        result_dict = {'installation_dirs':result} if result != [] else {'installation_dirs':"False"}
         #result_dict.update({'error5':[e]})
         print e
         return result_dict
@@ -290,14 +291,40 @@ def get_admin_dirs(url):
                             break
                     else:
                         result.append(new_url)
-        result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':['No administration directories found']}
+        result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':"False"}
         return result_dict
     except Exception as e:
-        result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':['No administration directories found']}
+        result_dict = {'admin_dirs':result} if result != [] else {'admin_dirs':"False"}
         #result_dict.update({'error6':[e]})
         print e
         return result_dict
 
+
+def get_cms(url):
+    try:
+        result = ''
+        if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'CMS detection', '*'*30)
+        if debug: print '\n'+url
+        response = get(url, verify=False, timeout=4)
+        if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
+        
+        regex_generator = r'<meta name="generator" content="(?P<generator>[^"]+)"'
+        regex_moodle = r'<meta name="keywords" content="moodle'
+        generator = search(regex_generator,response.text)
+        moodle = search(regex_moodle,response.text)
+
+        if generator is not None:
+            result = generator.group('generator')
+        elif moodle is not None:
+            result = 'Moodle'
+        
+        result_dict = {'cms':result} if result != '' else {'cms':'Could not determine the CMS.'}
+        return result_dict
+    except Exception as e:
+        result_dict = {'cms':result} if result != '' else {'cms':'Could not determine the CMS.'}
+        #result_dict.update({'error7':[e]})
+        print e
+        return result_dict
 
 
 """
@@ -313,11 +340,11 @@ def active_analysis(url):
         dirs = get_directories(url, tree)
         result_dict.update(web_structure)
         result_dict.update(get_backup_files(url))
-#        result_dict.update(get_sensitive_files(url))
-#        result_dict.update(get_directory_indexing(dirs))
-#        result_dict.update(get_installation_dirs(url))
+        result_dict.update(get_sensitive_files(url))
+        result_dict.update(get_directory_indexing(dirs))
+        result_dict.update(get_installation_dirs(url))
         result_dict.update(get_admin_dirs(url))
-#        result_dict.update(get_cms(url))
+        result_dict.update(get_cms(url))
         return result_dict
     except ValueError as e:
         print e

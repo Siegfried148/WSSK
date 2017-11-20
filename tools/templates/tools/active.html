@@ -67,7 +67,6 @@
 				<div class="row section-limit" id="backups">
 					<div class="col-md-12 col-lg-12 ">
 						<h3>Backup Files</h3>
-						<!--				<input type="text" class="form-control" value="{{ test }}" name="test"> -->
 						<br>
 						{% if error2 %}
 							<input type="text" id="back-error" class="form-control" value="{{ error2 }}">
@@ -76,9 +75,13 @@
 						<div class="row">
 							<div class="col-md-12 col-lg-12">
 								<ul class="list-group">
+									{% if backups != "False" %}
 									{% for b in backups %}
-									<li class="list-group-item"><a href="{{ b }}">{{ b }}</a></li>
+									<li class="list-group-item"><a target="_blank" href="{{ b }}">{{ b }}</a></li>
 									{% endfor %}
+									{% else %}
+									<li class="list-group-item">No backup files were found</li>
+									{% endif %}
 								</ul>	    
 							</div>
 						</div>
@@ -97,9 +100,13 @@
 						<div class="row">
 							<div class="col-md-12 col-lg-12">
 								<ul class="list-group">
+									{% if sensitive_files != "False" %}
 									{% for f in sensitive_files %}
-									<li class="list-group-item"><a href="{{ f }}">{{ f }}</a></li>
+									<li class="list-group-item"><a target="_blank" href="{{ f }}">{{ f }}</a></li>
 									{% endfor %}
+									{% else %}
+									<li class="list-group-item">No sensitive files were found</li>
+									{% endif %}
 								</ul>	    
 							</div>
 						</div>
@@ -118,9 +125,13 @@
 						<div class="row">
 							<div class="col-md-12 col-lg-12">
 								<ul class="list-group">
+									{% if indexing != "False" %}
 									{% for d in indexing %}
-									<li class="list-group-item"><a href="{{ d }}">{{ d }}</a></li>
+									<li class="list-group-item"><a target="_blank" href="{{ d }}">{{ d }}</a></li>
 									{% endfor %}
+									{% else %}
+									<li class="list-group-item">No directories allowing indexing were found</li>
+									{% endif %}
 								</ul>	    
 							</div>
 						</div>
@@ -139,9 +150,13 @@
 						<div class="row">
 							<div class="col-md-12 col-lg-12">
 								<ul class="list-group">
+									{% if installation_dirs != "False" %}
 									{% for d in installation_dirs %}
-									<li class="list-group-item"><a href="{{ d }}">{{ d }}</a></li>
+									<li class="list-group-item"><a target="_blank" href="{{ d }}">{{ d }}</a></li>
 									{% endfor %}
+									{% else %}
+									<li class="list-group-item">No installation directories were found</li>
+									{% endif %}
 								</ul>	    
 							</div>
 						</div>
@@ -160,9 +175,32 @@
 						<div class="row">
 							<div class="col-md-12 col-lg-12">
 								<ul class="list-group">
+									{% if admin_dirs != "False" %}
 									{% for d in admin_dirs %}
-									<li class="list-group-item"><a href="{{ d }}">{{ d }}</a></li>
+									<li class="list-group-item"><a target="_blank" href="{{ d }}">{{ d }}</a></li>
 									{% endfor %}
+									{% else %}
+									<li class="list-group-item">No administration directories were found</li>
+									{% endif %}
+								</ul>	    
+							</div>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+				{% if cms %}
+				<div class="row section-limit" id="cms">
+					<div class="col-md-12 col-lg-12 ">
+						<h3>CMS</h3>
+						<br>
+						{% if error7 %}
+							<input type="text" id="cms-error" class="form-control" value="{{ error7 }}">
+						{% endif %}
+						<br>
+						<div class="row">
+							<div class="col-md-12 col-lg-12">
+								<ul class="list-group">
+									<li class="list-group-item">{{ cms }}</li>
 								</ul>	    
 							</div>
 						</div>

@@ -1,12 +1,13 @@
 wp-admin
 administrator
 user
-?q=user
 user/login
 login
+admin
 wbadmin
 web_admin
 site-admini
 UserAdmin
 phpmyadmin
 PhpMyAdmin
+phpMyAdmin

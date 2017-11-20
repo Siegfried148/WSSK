@@ -15,3 +15,5 @@ phpinfo
 phpinfo.php
 server-info
 .server-info
+robots.txt
+.htaccess
