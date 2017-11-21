@@ -74,7 +74,7 @@ def check_index(url):
         return {'index_files':index_result[:-2]}
     except Exception as e:
         print e
-        return {'error1': 'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
+        return {'index_files': 'Could not determine the index file'}
 
 
 """
@@ -98,7 +98,7 @@ def check_robots(url):
         return {'robots_file':robots_file}
     except Exception as e:
         print e
-        return {'error1':  'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
+        return {'robots_file':'Could not find a robots.txt file'}
 
 
 """
