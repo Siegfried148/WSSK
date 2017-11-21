@@ -152,6 +152,14 @@ cmd="cp /opt/wssk/WSSK/tools/index_files.short /opt/wssk/lists/index_files"
 $cmd
 log_command $? "$cmd"
 
+cmd="mkdir /opt/wssk/db"
+$cmd
+log_command $? "$cmd"
+
+cmd="python /opt/wssk/WSSK/database.py"
+$cmd
+log_command $? "$cmd"
+
 sed -i "s/\(substitute-address\)/$ip_address/" /opt/wssk/WSSK/wssk/settings.py
 
 cmd="python /opt/wssk/WSSK/manage.py runserver 0.0.0.0:8000"
