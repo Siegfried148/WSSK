@@ -98,7 +98,7 @@ cmd="apt-get update"
 $cmd
 log_command $? "$cmd"
 
-cmd="apt-get install -y python-pip git-core libssl-dev swig nmap"
+cmd="apt-get install -y python-pip git-core libssl-dev swig nmap traceroute whois"
 $cmd
 log_command $? "$cmd"
 
