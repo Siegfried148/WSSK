@@ -37,7 +37,17 @@ user_install()
 	fi
 }
 
-
+exit_install()
+{
+	echo >> $LOG
+	echo "[`date +"%F %X"`] - The installation script failed" >> $LOG
+	echo >> $LOG
+	echo
+	echo "[`date +"%F %X"`] - The installation script failed"
+	echo
+	end_repository
+	exit 1
+}
 
 banner_log()
 {
@@ -70,6 +80,9 @@ log_command()
 	fi
 }
 
+activate () {
+	. /opt/wssk/wssk-venv/bin/activate
+}
 
 
 #########################################
@@ -78,6 +91,8 @@ log_command()
 
 user_install
 banner_log
+echo -n "Enter the IP address that will be used by WSSK > "
+read ip_address
 
 cmd="apt-get update"
 $cmd
@@ -95,19 +110,17 @@ cmd="mkdir /opt/wssk"
 $cmd
 log_command $? "$cmd"
 
+cmd="virtualenv /opt/wssk/wssk-venv"
+$cmd
+log_command $? "$cmd"
+
+activate
+
+cmd="pip install django pycrypto urllib3 requests m2crypto anytree"
+$cmd
+log_command $? "$cmd" 
+
 cmd="cd /opt/wssk"
-$cmd
-log_command $? "$cmd"
-
-cmd="virtualenv wssk-venv"
-$cmd
-log_command $? "$cmd"
-
-cmd="source wssk-venv/bin/activate"
-$cmd
-log_command $? "$cmd"
-
-cmd="pip install django pycrpto urllib3 requests m2crypto anytree"
 $cmd
 log_command $? "$cmd" 
 
@@ -139,15 +152,9 @@ cmd="cp /opt/wssk/WSSK/tools/index_files.short /opt/wssk/lists/index_files"
 $cmd
 log_command $? "$cmd"
 
-cmd="cd /opt/wssk/WSSK"
-$cmd
-log_command $? "$cmd"
+sed -i "s/\(substitute-address\)/\1 $ip_address/" /opt/wssk/WSSK/wssk/settings.py
 
-cmd="python manage.py runserver 0.0.0.0:8000"
-$cmd
-log_command $? "$cmd"
-
-cmd=""
+cmd="python /opt/wssk/WSSK/manage.py runserver 0.0.0.0:8000"
 $cmd
 log_command $? "$cmd"
 
