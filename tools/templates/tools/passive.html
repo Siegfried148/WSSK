@@ -50,6 +50,10 @@
 				<div class="row" id="results">
 					<div class="col-md-7 col-lg-7 ">
 						<h3>Passive analysis results</h3>
+						<p>This module looks for the available HTTP methods, the existing index files
+						and the robots.txt file. Don't forget to disable the methods PUT, DELETE or TRACE.
+						</p>
+						<br>
 						<br>
 					</div>
 				</div>
@@ -67,6 +71,7 @@
 				      		<tr>
 				        		<td>HTTP methods</td>
 							<td>{{ http_methods  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Test_HTTP_Methods_(OTG-CONFIG-006)">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>Index files</td>
@@ -75,6 +80,7 @@
 				      		<tr>
 				        		<td>robots.txt file</td>
 							<td>{{ robots_file  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Review_Webserver_Metafiles_for_Information_Leakage_(OTG-INFO-003)">Learn more</a></td>
 				      		</tr>
 						<!--
 				      		<tr>
@@ -87,6 +93,10 @@
 				<div class="row">
 					<div class="col-md-7 col-lg-7 ">
 						<h3>HTTP header analysis</h3>
+						<p>This modules helps to determine information from the server, such as the server 
+						version, the PHP (or the generator) version and some other headers that may help to make
+						safer the connections such as HSTS.</p>
+						<br>
 						<br>
 					</div>
 				</div>
@@ -98,48 +108,54 @@
 						<tr>
 							<th>HTTP header</th>
 						        <th>Result</th>
+							<th>More info</th>
 						</tr>
 					</thead>
 					<tbody>
 			      			<tr>
 							<td>Server</td>
 							<td>{{ signature  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Fingerprint_Web_Application_Framework_(OTG-INFO-008)">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>X-Powered-By</td>
 							<td>{{ php_version  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Fingerprint_Web_Application_Framework_(OTG-INFO-008)">Learn more</a></td>
 				      		</tr>
 			      			<tr>
 							<td>X-Generator</td>
 							<td>{{ cms  }}</td>
-				      		</tr>
-				      		<tr>
-				        		<td>X-Cms-Version</td>
-							<td>{{ cms_version  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Fingerprint_Web_Application_Framework_(OTG-INFO-008)">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>X-XSS-Protection</td>
 							<td>{{ x_xss_protection  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Security_Headers">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>X-Frame-Options</td>
 							<td>{{ x_frame_options  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Security_Headers">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>X-Content-Type-Options</td>
 							<td>{{ x_content_type_options  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/Security_Headers">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>Strict-Transport-Security</td>
 							<td>{{ hsts  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>Set-Cookie: secure</td>
 							<td>{{ setcookie_secure  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/SecureFlag">Learn more</a></td>
 				      		</tr>
 				      		<tr>
 				        		<td>Set-Cookie: HTTP Only</td>
 							<td>{{ setcookie_httponly  }}</td>
+							<td><a target="_blank" href="https://www.owasp.org/index.php/HttpOnly">Learn more</a></td>
 				      		</tr>
 				    	</tbody>
 				</table>	
@@ -147,6 +163,9 @@
 				<div class="row">
 					<div class="col-md-7 col-lg-7 ">
 						<h3>HTTPS analysis</h3>
+						<p>This module will show information about the certificate, the supported algorithms
+						and the available cipher suites of pages that support HTTPS.</p>
+						<br>
 						<br>
 					</div>
 				</div>
@@ -158,6 +177,7 @@
 						<tr>
 							<th>Feature</th>
 						        <th>Result</th>
+							<th><a target="_blank" href="https://www.owasp.org/index.php/HttpOnly">Learn more</a></th>
 						</tr>
 					</thead>
 					<tbody>

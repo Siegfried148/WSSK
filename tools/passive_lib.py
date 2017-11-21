@@ -97,6 +97,7 @@ def check_robots(url):
         robots_file = ('File: %s/robots.txt' % url) if has_robots else 'Does not have a robots.txt'
         return {'robots_file':robots_file}
     except Exception as e:
+        print e
         return {'error1':  'Passive Analysis Error:(%s) ' % url +'Is the information correct?'}
 
 
@@ -146,7 +147,7 @@ def check_headers(url):
 	    x_content_type_options = headers['X-Content-Type-Options'] if 'X-Content-Type-Options' in headers else 'Header is not set'
 	    hsts = headers['Strict-Transport-Security'] if 'Strict-Transport-Security' in headers else 'Header is not set'
 	    cms = headers['X-Generator'] if 'x-Generator' in headers else 'Header is not set'
-	    cms_version = headers['X-Cms-Version'] if 'X-Cms-Version' in headers else 'Header is not set'
+	    #cms_version = headers['X-Cms-Version'] if 'X-Cms-Version' in headers else 'Header is not set'
 	    #Set-Cookie options
 	    if 'Set-Cookie' in headers:
 	       cookie_header = headers['Set-Cookie']
@@ -165,8 +166,7 @@ def check_headers(url):
 	            'hsts':hsts,
 	            'setcookie_secure':setcookie_secure,
                     'setcookie_httponly':setcookie_httponly,
-                    'cms':cms,
-                    'cms_version':cms_version}
+                    'cms':cms}
     except Exception as e:
         print e
         return {'error2': 'HTTP Analysis Error:(%s) ' % url +'Is the information correct?'}
@@ -233,6 +233,7 @@ def get_key(raw_cert):
             pub_array[i] = ' '.join(pub_array[i][j:j+2] for j in range(0,len(pub_array[i]),2))        
         return {'ca_key':pub_array}
     except Exception as e:
+        print e
         return {'ca_key':'Could not get the public key. Maybe the certificate uses ECC and not RSA.'}
 
 
@@ -340,12 +341,15 @@ def check_ciphers(site):
     try:
         if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Cipher suites detection', '*'*30)
         if debug: print '\nhttps://'+site
-        process = Popen(['nmap','-sV', '-p', port, '--script','ssl-enum-ciphers',site], stdout=PIPE, stderr=STDOUT)
+        process = Popen(['nmap', '-p', port, '--script','ssl-enum-ciphers',site], stdout=PIPE, stderr=STDOUT)
         code = process.wait()
         output = process.stdout.read()
-        output = output.split('ssl-enum-ciphers:')[1]
-        output = output.split('Service detection')[0]
-        output = output.split('\n')
+        if 'ssl-enum-ciphers:' in output and 'Nmap' in output:
+            output = output.split('ssl-enum-ciphers:')[1]
+            output = output.split('Nmap')[0]
+            output = output.split('\n')
+        else:
+            output = ['Could not determine the cipher suites']
         return {'cipher_suites': output}
     except ValueError as e:
         print e
@@ -367,7 +371,7 @@ def passive_analysis(url):
         result_dict.update(check_methods(url))
         result_dict.update(check_index(url))
         result_dict.update(check_robots(url))
-        result_dict.update(check_install(url))
+#        result_dict.update(check_install(url))
         if supportsSSL(site,url):
             result_dict.update(check_certificate(site))
             result_dict.update(check_ssl_protocols(site))

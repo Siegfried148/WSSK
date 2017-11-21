@@ -51,5 +51,4 @@ class ActiveForm(forms.Form):
     active_url = forms.CharField(max_length = 150, required=False)
 
 class ScannerForm(forms.Form):
-    scanner_ip = forms.CharField(max_length = 150, required=False)
-    scanner_port = forms.CharField(max_length = 5, required=False)
+    scanner_url = forms.CharField(max_length = 150, required=False)

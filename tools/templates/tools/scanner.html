@@ -12,43 +12,40 @@
 				<form name = "form" action = "{% url "scanner" %}#results" method = "POST" >{% csrf_token %} 
 					<div class="row">
 						<div class="col-md-7 col-md-offset-1 col-lg-7 col-lg-offset-1">
-							<label for="comment">IP address or domain name:</label>
-							{% if scanner_ip %}
-							<input type="text" class="form-control" value="{{ scanner_ip }}" name="scanner_ip">
+							<label for="comment">URL:</label>
+							{% if scanner_url %}
+							<input type="text" class="form-control" value="{{ scanner_url }}" name="scanner_url">
 							{% else %}
-							<input type="text" class="form-control" value="" name="scanner_ip">
-							{% endif %}
-						</div>
-						<div class="col-md-4 col-lg-4">
-							<label for="comment">Port:</label>
-							{% if scanner_port %}
-							<input type="text" class="form-control" value="{{ scanner_port }}" name="scanner_port">
-							{% else %}
-							<input type="text" class="form-control" value="" name="scanner_port">
+							<input type="text" class="form-control" value="" name="scanner_url">
 							{% endif %}
 						</div>
 					</div>
 				        <br>
 					<br>
 					<div class="row">
-						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						<div class="col-md-1 col-md-offset-1 col-lg-1 col-lg-offset-1">
 						       	<button class="btn" type = "submit" value = "Submit" name="heartbleed_btn" >
 								<strong>Heartbleed</strong>
 							</button>
 						</div>
-						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						<div class="col-md-1 col-md-offset-1 col-lg-1 col-lg-offset-1">
 						       	<button class="btn" type = "submit" value = "Submit" name="shellshock_btn" >
 								<strong>Shellshock</strong>
 							</button>
 						</div>
-						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						<div class="col-md-1 col-md-offset-1 col-lg-1 col-lg-offset-1">
 						       	<button class="btn" type = "submit" value = "Submit" name="poodle_btn" >
 								<strong>Poodle</strong>
 							</button>
 						</div>
-						<div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+						<div class="col-md-1 col-md-offset-1 col-lg-1 col-lg-offset-1">
 						       	<button class="btn" type = "submit" value = "Submit" name="drown_btn" >
 								<strong>Drown</strong>
+							</button>
+						</div>
+						<div class="col-md-1 col-md-offset-1 col-lg-1 col-lg-offset-1">
+						       	<button class="btn" type = "submit" value = "Submit" name="ghost_btn" >
+								<strong>Ghost</strong>
 							</button>
 						</div>
 					</div>
@@ -62,6 +59,7 @@
 			    		<li class="list-group-item">Bash Shellshock</li> 
 		    			<li class="list-group-item">Poodle</li> 
 		    			<li class="list-group-item">Drown</li> 
+		    			<li class="list-group-item">Ghost</li> 
 				</ul>	    
 			</div>
 		</div>
@@ -88,6 +86,7 @@
 								information as well as the encryption keys themselves.
 								<br><br>
 								<input type="text" class="form-control" value="{{ heartbleed_result }}">
+								<br><li><a target="_blank" href="http://heartbleed.com/">Learn more</a></li>
 							</ul>	    
 						</div>
 					</div>
@@ -114,6 +113,7 @@
 								severity
 								<br><br>
 								<input type="text" class="form-control" value="{{ shellshock_result }}">
+								<br><li><a target="_blank" href="https://www.welivesecurity.com/la-es/2014/09/26/shellshock-grave-vulnerabilidad-bash/">Learn more</a></li>
 							</ul>	    
 						</div>
 					</div>
@@ -135,6 +135,7 @@
 								by leveraging a Bleichenbacher RSA padding oracle, aka a "DROWN" attack.
 								<br><br>
 								<input type="text" class="form-control" value="{{ drown_result }}">
+								<br><li><a target="_blank" href="https://drownattack.com/">Learn more</a></li>
 							</ul>	    
 						</div>
 					</div>
@@ -161,6 +162,28 @@
 								need to make 256 SSL 3.0 requests to reveal one byte of encrypted messages.
 								<br><br>
 								<input type="text" class="form-control" value="{{ poodle_result }}">
+								<br><li><a target="_blank" href="https://www.us-cert.gov/ncas/alerts/TA14-290A">Learn more</a></li>
+							</ul>	    
+						</div>
+					</div>
+				{% endif %}
+				{% if ghost_result %}
+					<h3>Ghost Analysis</h3>
+					{% if ghost_error %}
+						<input type="text" id="ghost-error" class="form-control" value="{{ ghost_error }}">
+					{% endif %}
+					<div class="row">
+						<div class="col-md-12 col-lg-12">
+							<ul class="list-group">
+								<h4>CVE-2015-0235</h4>
+								<br>
+								Heap-based buffer overflow in the __nss_hostname_digits_dots function in 
+								glibc 2.2, and other 2.x versions before 2.18, allows context-dependent 
+								attackers to execute arbitrary code via vectors related to the (1) 
+								gethostbyname or (2) gethostbyname2 function, aka "GHOST."
+								<br><br>
+								<input type="text" class="form-control" value="{{ ghost_result }}">
+								<br><li><a target="_blank" href="https://blog.qualys.com/laws-of-vulnerabilities/2015/01/27/the-ghost-vulnerability">Learn more</a></li>
 							</ul>	    
 						</div>
 					</div>
