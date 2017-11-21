@@ -10,7 +10,79 @@ from .network_lib import *
 from .passive_lib import *
 from .active_lib import *
 from .scanner_lib import *
+import sqlite3 as lite
+from time import gmtime, strftime
 
+
+"""
+Returns the IP address of the client
+"""
+def get_ip(request):
+    try:
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+    except Exception as e:
+        print e
+
+"""
+Opens the database file
+"""
+con = lite.connect('/opt/wssk/db/wssk.db', check_same_thread=False)
+
+
+"""
+Inserts into the database, the IP that is visiting the web page
+"""
+def insert_visit_ip(ip):
+    with con:
+        cur = con.cursor()
+        query = """
+            INSERT OR IGNORE INTO VISIT_IP(ip) VALUES('%s');""" % ip
+        cur.execute(query)
+
+
+
+"""
+Inserts into the database, the domain/IP/URL that is being analyzed
+"""
+def insert_consulted_domain(domain):
+    with con:
+        cur = con.cursor()
+        query = """
+            INSERT OR IGNORE INTO CONSULTED_DOMAIN(domain) VALUES('%s');""" % domain
+        cur.execute(query)
+
+
+"""
+Insert into the database, the whole search
+"""
+def insert_search(ip, domain, desc_id):
+    with con:
+        date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        cur = con.cursor()
+        query = """
+            INSERT OR IGNORE INTO SEARCH(visit_ip_id, consult_dom_id, description_id, date) 
+                SELECT VISIT_IP.id, CONSULTED_DOMAIN.id, %s, '%s'
+                    FROM VISIT_IP, CONSULTED_DOMAIN
+                    WHERE VISIT_IP.ip = '%s'
+                    AND CONSULTED_DOMAIN.domain = '%s';""" % (desc_id, date, ip, domain) 
+        cur.execute(query)
+
+
+"""
+Calls the functions that can insert into the db
+"""
+def insert_into_db(ip,domain,desc_id):
+    try:
+        insert_visit_ip(ip)
+        insert_consulted_domain(domain)
+        insert_search(ip,domain,desc_id)
+    except Exception as e:
+        print e
 
 """
 Renders the main page.
@@ -86,6 +158,8 @@ def passive(request):
             message = PassiveForm(request.POST)
             if message.is_valid():
                 url = message.cleaned_data['passive_url']
+                ip = get_ip(request)
+                insert_into_db(ip,url,2)
                 result_dict.update({'passive_url':url})
                 result_dict.update(passive_analysis(url))
     return render(request, 'tools/passive.html', result_dict)
@@ -102,6 +176,8 @@ def active(request):
             message = ActiveForm(request.POST)
             if message.is_valid():
                 url = message.cleaned_data['active_url']
+                ip = get_ip(request)
+                insert_into_db(ip,url,1)
                 result_dict.update(active_analysis(url))
     return render(request, 'tools/active.html', result_dict)
 
@@ -116,12 +192,23 @@ def scanner(request):
             message = ScannerForm(request.POST)
             if message.is_valid():
                 url = message.cleaned_data['scanner_url']
+                ip = get_ip(request)
                 result_dict.update({'scanner_url':url})
-                if 'heartbleed_btn' in request.POST:  result_dict.update(check_heartbleed(url))
-                elif 'shellshock_btn' in request.POST:  result_dict.update(check_shellshock(url))
-                elif 'poodle_btn' in request.POST:  result_dict.update(check_poodle(url))
-                elif 'drown_btn' in request.POST:  result_dict.update(check_drown(url))
-                elif 'ghost_btn' in request.POST:  result_dict.update(check_ghost(url))
+                if 'heartbleed_btn' in request.POST:  
+                    insert_into_db(ip,url,3)
+                    result_dict.update(check_heartbleed(url))
+                elif 'shellshock_btn' in request.POST:  
+                    insert_into_db(ip,url,4)
+                    result_dict.update(check_shellshock(url))
+                elif 'poodle_btn' in request.POST:  
+                    insert_into_db(ip,url,5)
+                    result_dict.update(check_poodle(url))
+                elif 'drown_btn' in request.POST:  
+                    insert_into_db(ip,url,6)
+                    result_dict.update(check_drown(url))
+                elif 'ghost_btn' in request.POST:  
+                    insert_into_db(ip,url,7)
+                    result_dict.update(check_ghost(url))
     return render(request, 'tools/scanner.html', result_dict)
 
 

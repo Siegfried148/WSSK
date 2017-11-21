@@ -26,6 +26,7 @@ SECRET_KEY = 's+x_o4pu@semlud9r)rl7v18si(+f5)kxbfsoxj%8!yx1ih9#!'
 DEBUG = True
 
 ALLOWED_HOSTS = ['substitute-address','localhost']
+#ALLOWED_HOSTS = ['192.168.131.176','localhost']
 
 
 # Application definition
