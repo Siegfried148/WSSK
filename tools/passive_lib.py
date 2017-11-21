@@ -53,7 +53,7 @@ def check_index(url):
     try:
         index_result = ''
         if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Index files', '*'*30)
-        with open('/opt/index_files.short','r') as f:
+        with open('/opt/wssk/lists/index_files','r') as f:
             indexes = File(f)
             for index in indexes:
                 has_index = True
@@ -112,7 +112,7 @@ def check_install(url):
         dirs_result = ''
         if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Installation directories', '*'*30)
         for d in directories:
-            if debug: print '\n'+url+'/robots.txt'
+            if debug: print '\n'+url+'/'+d
             response = get('%s/%s' % (url,d), verify=False, timeout=4)
             if debug: print 'Code: %s\tRedirects history: %s' % (response.status_code, response.history)
             if response.status_code in [200,403]:

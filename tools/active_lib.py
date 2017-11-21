@@ -164,7 +164,7 @@ def get_backup_files(url):
     try:
         backups_result = []
         if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Backup files', '*'*30)
-        with open('/opt/backup_names.short','r') as f:
+        with open('/opt/wssk/lists/backup_names','r') as f:
             files = File(f)
             for _file in files:
                 new_url = ('%s/%s' % (url,_file[:-1]))
@@ -194,7 +194,7 @@ def get_sensitive_files(url):
     try:
         result = []
         if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Sensitive files', '*'*30)
-        with open('/opt/sensitive_files.short','r') as f:
+        with open('/opt/wssk/lists/sensitive_files','r') as f:
             files = File(f)
             for _file in files:
                 new_url = ('%s/%s' % (url,_file[:-1]))
@@ -248,7 +248,7 @@ def get_installation_dirs(url):
     try:
         result = []
         if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Installation Directories', '*'*30)
-        with open('/opt/installation_dirs','r') as f:
+        with open('/opt/wssk/lists/installation_dirs','r') as f:
             files = File(f)
             for _file in files:
                 new_url = ('%s/%s' % (url,_file[:-1]))
@@ -278,7 +278,7 @@ def get_admin_dirs(url):
     try:
         result = []
         if debug: print '\n\n\n%s\n%s\n%s' % ('*'*30,'Administration directories', '*'*30)
-        with open('/opt/admin_dirs.short','r') as f:
+        with open('/opt/wssk/lists/admin_dirs','r') as f:
             files = File(f)
             for _file in files:
                 new_url = ('%s/%s' % (url,_file[:-1]))
