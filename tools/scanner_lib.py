@@ -76,7 +76,7 @@ def check_ghost(site):
             else:
                 result_dict.update({'ghost_result':'%s is not vulnerable' % url})
         else:
-            if debug: print 'It has a xmlrpc file'
+            if debug: print 'It does not have a xmlrpc file'
             result_dict.update({'ghost_result':'%s is not vulnerable' % url})
         return result_dict
     except Exception as e:
