@@ -116,7 +116,7 @@ log_command $? "$cmd"
 
 activate
 
-cmd="pip install django pycrypto urllib3 requests m2crypto anytree"
+cmd="pip install django==1.11 pycrypto urllib3 requests m2crypto anytree"
 $cmd
 log_command $? "$cmd" 
 
