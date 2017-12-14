@@ -224,7 +224,7 @@ def network(request):
         if 'pub_ip_btn' in request.POST:
             message = PublicIPForm(request.POST)
             if message.is_valid():
-                result_dict = get_ip(request)
+                result_dict = get_pub_ip(request)
         elif 'ping_btn' in request.POST:
             message = PingForm(request.POST)
             if message.is_valid():

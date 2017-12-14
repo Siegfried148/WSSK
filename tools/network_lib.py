@@ -7,7 +7,7 @@ from socket import gethostbyname, gethostbyaddr
 """
 Uses HTTP requests to determine the original IP address.
 """
-def get_ip(request):
+def get_pub_ip(request):
     try:
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
