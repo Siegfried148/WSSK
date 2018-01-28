@@ -45,7 +45,6 @@ exit_install()
 	echo
 	echo "[`date +"%F %X"`] - The installation script failed"
 	echo
-	end_repository
 	exit 1
 }
 
@@ -93,6 +92,10 @@ user_install
 banner_log
 echo -n "Enter the IP address that will be used by WSSK > "
 read ip_address
+
+cmd="useradd django-admin"
+$cmd
+log_command $? "$cmd"
 
 cmd="apt-get update"
 $cmd
@@ -162,7 +165,14 @@ log_command $? "$cmd"
 
 sed -i "s/\(substitute-address\)/$ip_address/" /opt/wssk/WSSK/wssk/settings.py
 
-cmd="python /opt/wssk/WSSK/manage.py runserver 0.0.0.0:8000"
+sed -i "s/\(DEBUG =\) True/\1 False/" /opt/wssk/WSSK/wssk/settings.py
+
+cmd="chown -R django-admin /opt/wssk"
 $cmd
 log_command $? "$cmd"
+
+cmd="cp /opt/wssk/WSSK/start_django.sh /opt/wssk"
+$cmd
+log_command $? "$cmd"
+
 
