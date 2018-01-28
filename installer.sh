@@ -165,8 +165,6 @@ log_command $? "$cmd"
 
 sed -i "s/\(substitute-address\)/$ip_address/" /opt/wssk/WSSK/wssk/settings.py
 
-sed -i "s/\(DEBUG =\) True/\1 False/" /opt/wssk/WSSK/wssk/settings.py
-
 cmd="chown -R django-admin /opt/wssk"
 $cmd
 log_command $? "$cmd"
